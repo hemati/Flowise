@@ -8,6 +8,9 @@ export class ChatFlow implements IChatFlow {
     id: string
 
     @Column()
+    user_id: string
+
+    @Column()
     name: string
 
     @Column()

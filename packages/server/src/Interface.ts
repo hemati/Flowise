@@ -7,6 +7,7 @@ export type MessageType = 'apiMessage' | 'userMessage'
  */
 export interface IChatFlow {
     id: string
+    user_id: string
     name: string
     flowData: string
     isPublic: boolean
