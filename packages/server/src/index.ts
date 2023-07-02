@@ -48,6 +48,7 @@ import { ChatflowPool } from './ChatflowPool'
 import { ICommonObject, INodeOptionsValue } from 'flowise-components'
 import { fork } from 'child_process'
 import { Tool } from './entity/Tool'
+import { auth } from './firebaseSetup'
 
 export class App {
     app: express.Application
@@ -181,7 +182,10 @@ export class App {
 
         // Get all chatflows
         this.app.get('/api/v1/chatflows', async (req: Request, res: Response) => {
-            const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).find()
+            auth.
+            const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).findBy({
+                user_id: 'Sadaf'
+            })
             return res.json(chatflows)
         })
 
@@ -226,8 +230,11 @@ export class App {
         // Save chatflow
         this.app.post('/api/v1/chatflows', async (req: Request, res: Response) => {
             const body = req.body
+            body['user_id'] = 'Sadaf'
+            console.log(body)
             const newChatFlow = new ChatFlow()
             Object.assign(newChatFlow, body)
+            console.log(newChatFlow)
 
             const chatflow = this.AppDataSource.getRepository(ChatFlow).create(newChatFlow)
             const results = await this.AppDataSource.getRepository(ChatFlow).save(chatflow)
