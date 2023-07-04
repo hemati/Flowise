@@ -48,7 +48,6 @@ import { ChatflowPool } from './ChatflowPool'
 import { ICommonObject, INodeOptionsValue } from 'flowise-components'
 import { fork } from 'child_process'
 import { Tool } from './entity/Tool'
-import { auth } from './firebaseSetup'
 
 export class App {
     app: express.Application
@@ -182,9 +181,13 @@ export class App {
 
         // Get all chatflows
         this.app.get('/api/v1/chatflows', async (req: Request, res: Response) => {
-            auth.
+            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
+            if (!userId) {
+                res.status(400).send('user_id header is missing') // Return an error if the user_id is missing
+                return
+            }
             const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).findBy({
-                user_id: 'Sadaf'
+                user_id: userId
             })
             return res.json(chatflows)
         })
@@ -230,7 +233,7 @@ export class App {
         // Save chatflow
         this.app.post('/api/v1/chatflows', async (req: Request, res: Response) => {
             const body = req.body
-            body['user_id'] = 'Sadaf'
+            body['user_id'] = req.headers.user_id
             console.log(body)
             const newChatFlow = new ChatFlow()
             Object.assign(newChatFlow, body)

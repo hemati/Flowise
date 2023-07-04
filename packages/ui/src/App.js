@@ -31,6 +31,11 @@ const App = () => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             console.log('user', !!user)
             dispatch(setAuthenticated(!!user))
+            if (user) {
+                localStorage.setItem('user_id', user.uid) // Save user ID to local storage
+            } else {
+                localStorage.removeItem('user_id') // Clear user ID when logged out
+            }
             setLoading(false)
         })
 
