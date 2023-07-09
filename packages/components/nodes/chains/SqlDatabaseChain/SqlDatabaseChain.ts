@@ -1,5 +1,5 @@
 import { ICommonObject, INode, INodeData, INodeParams } from '../../../src/Interface'
-import { SqlDatabaseChain, SqlDatabaseChainInput } from 'langchain/chains'
+import { SqlDatabaseChain, SqlDatabaseChainInput } from 'langchain/chains/sql_db'
 import { CustomChainHandler, getBaseClasses } from '../../../src/utils'
 import { DataSource } from 'typeorm'
 import { SqlDatabase } from 'langchain/sql_db'
@@ -66,7 +66,7 @@ class SqlDatabaseChain_Chains implements INode {
 
         const chain = await getSQLDBChain(databaseType, dbFilePath, model)
         if (options.socketIO && options.socketIOClientId) {
-            const handler = new CustomChainHandler(options.socketIO, options.socketIOClientId)
+            const handler = new CustomChainHandler(options.socketIO, options.socketIOClientId, 2)
             const res = await chain.run(input, [handler])
             return res
         } else {
