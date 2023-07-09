@@ -2,6 +2,9 @@ import PropTypes from 'prop-types'
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { signOut } from 'firebase/auth'
+import { setAuthenticated } from '../../../store/actions' // make sure path is correct
+import { auth } from '../../../firebaseSetup' // assuming this is the correct path to your firebase setup
 
 // material-ui
 import { useTheme } from '@mui/material/styles'
@@ -82,9 +85,16 @@ const Header = ({ handleLeftDrawerToggle }) => {
         localStorage.setItem('isDarkMode', !isDark)
     }
 
-    const signOutClicked = () => {
+    const signOutClicked = async () => {
         localStorage.removeItem('username')
         localStorage.removeItem('password')
+        try {
+            await signOut(auth)
+            dispatch(setAuthenticated(false))
+        } catch (error) {
+            console.error(error)
+            // Here you can also dispatch an action to show an error notification
+        }
         navigate('/', { replace: true })
         navigate(0)
     }

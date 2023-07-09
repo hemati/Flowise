@@ -29,12 +29,14 @@ const App = () => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            console.log('user', !!user)
             dispatch(setAuthenticated(!!user))
             if (user) {
-                localStorage.setItem('user_id', user.uid) // Save user ID to local storage
+                localStorage.setItem('user_id', user.uid)
+                localStorage.setItem('username', user.displayName ?? user.email)
+                navigate('/chatflows')
             } else {
-                localStorage.removeItem('user_id') // Clear user ID when logged out
+                localStorage.removeItem('user_id')
+                localStorage.removeItem('username')
             }
             setLoading(false)
         })
@@ -43,8 +45,6 @@ const App = () => {
     }, [dispatch])
 
     useEffect(() => {
-        console.log('isAuthenticated', isAuthenticated)
-        console.log('loading', loading)
         if (!isAuthenticated && !loading) {
             navigate('/login')
         }

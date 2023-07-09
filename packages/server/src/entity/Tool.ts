@@ -30,4 +30,7 @@ export class Tool implements ITool {
 
     @UpdateDateColumn()
     updatedDate: Date
+
+    @Column()
+    user_id: string
 }

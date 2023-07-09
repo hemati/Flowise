@@ -42,6 +42,8 @@ import './index.css'
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = ({ username, handleLogout }) => {
+    console.log('username', username)
+    console.log('handleLogout', handleLogout)
     const theme = useTheme()
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -229,7 +231,8 @@ const ProfileSection = ({ username, handleLogout }) => {
                                                     </ListItemIcon>
                                                     <ListItemText primary={<Typography variant='body2'>About Flowise</Typography>} />
                                                 </ListItemButton>
-                                                {localStorage.getItem('username') && localStorage.getItem('password') && (
+                                                {((localStorage.getItem('username') && localStorage.getItem('password')) ||
+                                                    localStorage.getItem('user_id')) && (
                                                     <ListItemButton
                                                         sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                         onClick={handleLogout}
