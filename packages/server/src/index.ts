@@ -72,7 +72,7 @@ export class App {
                 this.chatflowPool = new ChatflowPool()
 
                 // Initialize API keys
-                await getAPIKeys()
+                await getAPIKeys(undefined)
             })
             .catch((err) => {
                 console.error('❌[server]: Error during Data Source initialization:', err)
@@ -234,10 +234,8 @@ export class App {
         this.app.post('/api/v1/chatflows', async (req: Request, res: Response) => {
             const body = req.body
             body['user_id'] = req.headers.user_id
-            console.log(body)
             const newChatFlow = new ChatFlow()
             Object.assign(newChatFlow, body)
-            console.log(newChatFlow)
 
             const chatflow = this.AppDataSource.getRepository(ChatFlow).create(newChatFlow)
             const results = await this.AppDataSource.getRepository(ChatFlow).save(chatflow)
@@ -335,7 +333,14 @@ export class App {
 
         // Get all tools
         this.app.get('/api/v1/tools', async (req: Request, res: Response) => {
-            const tools = await this.AppDataSource.getRepository(Tool).find()
+            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
+            if (!userId) {
+                res.status(400).send('user_id header is missing') // Return an error if the user_id is missing
+                return
+            }
+            const tools = await this.AppDataSource.getRepository(Tool).findBy({
+                user_id: userId
+            })
             return res.json(tools)
         })
 
@@ -349,7 +354,13 @@ export class App {
 
         // Add tool
         this.app.post('/api/v1/tools', async (req: Request, res: Response) => {
+            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
+            if (!userId) {
+                res.status(400).send('user_id header is missing') // Return an error if the user_id is missing
+                return
+            }
             const body = req.body
+            body.user_id = userId
             const newTool = new Tool()
             Object.assign(newTool, body)
 
@@ -409,7 +420,7 @@ export class App {
         this.app.get('/api/v1/database/export', async (req: Request, res: Response) => {
             const chatmessages = await this.AppDataSource.getRepository(ChatMessage).find()
             const chatflows = await this.AppDataSource.getRepository(ChatFlow).find()
-            const apikeys = await getAPIKeys()
+            const apikeys = await getAPIKeys(undefined)
             const result: IDatabaseExport = {
                 chatmessages,
                 chatflows,
@@ -516,13 +527,15 @@ export class App {
 
         // Get api keys
         this.app.get('/api/v1/apikey', async (req: Request, res: Response) => {
-            const keys = await getAPIKeys()
+            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
+            const keys = await getAPIKeys(userId)
             return res.json(keys)
         })
 
         // Add new api key
         this.app.post('/api/v1/apikey', async (req: Request, res: Response) => {
-            const keys = await addAPIKey(req.body.keyName)
+            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
+            const keys = await addAPIKey(req.body.keyName, userId)
             return res.json(keys)
         })
 
@@ -579,7 +592,7 @@ export class App {
 
         const suppliedKey = authorizationHeader.split(`Bearer `).pop()
         if (chatFlowApiKeyId && suppliedKey) {
-            const keys = await getAPIKeys()
+            const keys = await getAPIKeys(undefined)
             const apiSecret = keys.find((key) => key.id === chatFlowApiKeyId)?.apiSecret
             if (!compareKeys(apiSecret, suppliedKey)) return res.status(401).send(`Unauthorized`)
         }
