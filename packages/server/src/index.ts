@@ -6,6 +6,8 @@ import http from 'http'
 import * as fs from 'fs'
 import basicAuth from 'express-basic-auth'
 import { Server } from 'socket.io'
+import logger from './utils/logger'
+import { expressRequestLogger } from './utils/logger'
 
 import {
     IChatFlow,
@@ -57,13 +59,16 @@ export class App {
 
     constructor() {
         this.app = express()
+
+        // Add the expressRequestLogger middleware to log all requests
+        this.app.use(expressRequestLogger)
     }
 
     async initDatabase() {
         // Initialize database
         this.AppDataSource.initialize()
             .then(async () => {
-                console.info('📦[server]: Data Source has been initialized!')
+                logger.info('📦 [server]: Data Source has been initialized!')
 
                 // Initialize pools
                 this.nodesPool = new NodesPool()
@@ -75,7 +80,7 @@ export class App {
                 await getAPIKeys(undefined)
             })
             .catch((err) => {
-                console.error('❌[server]: Error during Data Source initialization:', err)
+                logger.error('❌ [server]: Error during Data Source initialization:', err)
             })
     }
 
@@ -656,7 +661,7 @@ export class App {
                 })
             })
         } catch (err) {
-            console.error(err)
+            logger.error(err)
         }
     }
 
@@ -710,13 +715,13 @@ export class App {
                 }
             }
 
-            /* Don't rebuild the flow (to avoid duplicated upsert, recomputation) when all these conditions met:
+            /*   Reuse the flow without having to rebuild (to avoid duplicated upsert, recomputation) when all these conditions met:
              * - Node Data already exists in pool
              * - Still in sync (i.e the flow has not been modified since)
              * - Existing overrideConfig and new overrideConfig are the same
              * - Flow doesn't start with nodes that depend on incomingInput.question
              ***/
-            const isRebuildNeeded = () => {
+            const isFlowReusable = () => {
                 return (
                     Object.prototype.hasOwnProperty.call(this.chatflowPool.activeChatflows, chatflowid) &&
                     this.chatflowPool.activeChatflows[chatflowid].inSync &&
@@ -730,7 +735,7 @@ export class App {
             }
 
             if (process.env.EXECUTION_MODE === 'child') {
-                if (isRebuildNeeded()) {
+                if (isFlowReusable()) {
                     nodeToExecuteData = this.chatflowPool.activeChatflows[chatflowid].endingNodeData
                     try {
                         const result = await this.startChildProcess(chatflow, chatId, incomingInput, nodeToExecuteData)
@@ -754,7 +759,7 @@ export class App {
                 const nodes = parsedFlowData.nodes
                 const edges = parsedFlowData.edges
 
-                if (isRebuildNeeded()) {
+                if (isFlowReusable()) {
                     nodeToExecuteData = this.chatflowPool.activeChatflows[chatflowid].endingNodeData
                     isStreamValid = isFlowValidForStream(nodes, nodeToExecuteData)
                 } else {
@@ -834,7 +839,7 @@ export class App {
             const removePromises: any[] = []
             await Promise.all(removePromises)
         } catch (e) {
-            console.error(`❌[server]: Flowise Server shut down error: ${e}`)
+            logger.error(`❌[server]: Flowise Server shut down error: ${e}`)
         }
     }
 }
@@ -874,7 +879,7 @@ export async function start(): Promise<void> {
     await serverApp.config(io)
 
     server.listen(port, () => {
-        console.info(`⚡️[server]: Flowise Server is listening at ${port}`)
+        logger.info(`⚡️ [server]: Flowise Server is listening at ${port}`)
     })
 }
 
