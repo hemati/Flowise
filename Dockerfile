@@ -4,8 +4,9 @@
 # Run image
 # docker run -d -p 3000:3000 flowise
 
-FROM node:18-alpine
-RUN apk add --update libc6-compat python3 make g++
+FROM --platform=linux/amd64 node:18-alpine
+RUN apk add --update --no-cache libc6-compat python3 make g++
+#RUN apk add --update libc6-compat python3 make g++
 # needed for pdfjs-dist
 RUN apk add --no-cache build-base cairo-dev pango-dev
 
@@ -29,7 +30,7 @@ COPY packages/ui/package.json ./packages/ui/package.json
 # Copy server package.json
 COPY packages/server/package.json ./packages/server/package.json
 
-RUN yarn install
+RUN yarn install --network-timeout 1000000000
 
 # Copy app source
 COPY . .
