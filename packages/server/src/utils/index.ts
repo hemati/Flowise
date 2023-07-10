@@ -1,26 +1,27 @@
-import path from "path";
-import fs from "fs";
-import moment from "moment";
+import path from 'path'
+import fs from 'fs'
+import moment from 'moment'
+import logger from './logger'
 import {
     IComponentNodes,
     IDepthQueue,
     IExploredNode,
-    INodeData,
     INodeDependencies,
     INodeDirectedGraph,
     INodeQueue,
-    IOverrideConfig,
     IReactFlowEdge,
     IReactFlowNode,
-    IVariableDict
-} from "../Interface";
-import { cloneDeep, get, merge, omit } from "lodash";
-import { getInputVariables, ICommonObject, IDatabaseEntity } from "flowise-components";
-import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
-import { ChatFlow } from "../entity/ChatFlow";
-import { ChatMessage } from "../entity/ChatMessage";
-import { Tool } from "../entity/Tool";
-import { DataSource } from "typeorm";
+    IVariableDict,
+    INodeData,
+    IOverrideConfig
+} from '../Interface'
+import { cloneDeep, get, omit, merge } from 'lodash'
+import { ICommonObject, getInputVariables, IDatabaseEntity } from 'flowise-components'
+import { scryptSync, randomBytes, timingSafeEqual } from 'crypto'
+import { ChatFlow } from '../entity/ChatFlow'
+import { ChatMessage } from '../entity/ChatMessage'
+import { Tool } from '../entity/Tool'
+import { DataSource } from 'typeorm'
 
 const QUESTION_VAR_PREFIX = 'question'
 export const databaseEntities: IDatabaseEntity = { ChatFlow: ChatFlow, ChatMessage: ChatMessage, Tool: Tool }
@@ -227,7 +228,7 @@ export const buildLangchain = async (
                 databaseEntities
             })
         } catch (e: any) {
-            console.error(e)
+            logger.error(e)
             throw new Error(e)
         }
 
@@ -601,7 +602,7 @@ export const replaceAllAPIKeys = async (content: ICommonObject[]): Promise<void>
     try {
         await fs.promises.writeFile(getAPIKeyPath(), JSON.stringify(content), 'utf8')
     } catch (error) {
-        console.error(error)
+        logger.error(error)
     }
 }
 
