@@ -14,3 +14,5 @@ spec:
   selector:
     app: "flowise"
   type: "LoadBalancer"
+
+
