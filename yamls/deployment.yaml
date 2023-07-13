@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: "flowise"
-        image: "gcr.io/langchainspace/flowise:dev"
+        image: "gcr.io/langchainspace/github.com/hemati/flowise"
         imagePullPolicy: "Always"
         resources: 
           requests:
