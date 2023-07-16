@@ -198,39 +198,39 @@ const ProfileSection = ({ username, handleLogout }) => {
                                                     }
                                                 }}
                                             >
-                                                <ListItemButton
-                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                    onClick={() => {
-                                                        setOpen(false)
-                                                        uploadRef.current.click()
-                                                    }}
-                                                >
-                                                    <ListItemIcon>
-                                                        <IconFileDownload stroke={1.5} size='1.3rem' />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant='body2'>Load Database</Typography>} />
-                                                </ListItemButton>
-                                                <ListItemButton
-                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                    onClick={handleExportDB}
-                                                >
-                                                    <ListItemIcon>
-                                                        <IconFileExport stroke={1.5} size='1.3rem' />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant='body2'>Export Database</Typography>} />
-                                                </ListItemButton>
-                                                <ListItemButton
-                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                    onClick={() => {
-                                                        setOpen(false)
-                                                        setAboutDialogOpen(true)
-                                                    }}
-                                                >
-                                                    <ListItemIcon>
-                                                        <IconInfoCircle stroke={1.5} size='1.3rem' />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant='body2'>About Flowise</Typography>} />
-                                                </ListItemButton>
+                                                {/*<ListItemButton*/}
+                                                {/*    sx={{ borderRadius: `${customization.borderRadius}px` }}*/}
+                                                {/*    onClick={() => {*/}
+                                                {/*        setOpen(false)*/}
+                                                {/*        uploadRef.current.click()*/}
+                                                {/*    }}*/}
+                                                {/*>*/}
+                                                {/*    <ListItemIcon>*/}
+                                                {/*        <IconFileDownload stroke={1.5} size='1.3rem' />*/}
+                                                {/*    </ListItemIcon>*/}
+                                                {/*    <ListItemText primary={<Typography variant='body2'>Load Database</Typography>} />*/}
+                                                {/*</ListItemButton>*/}
+                                                {/*<ListItemButton*/}
+                                                {/*    sx={{ borderRadius: `${customization.borderRadius}px` }}*/}
+                                                {/*    onClick={handleExportDB}*/}
+                                                {/*>*/}
+                                                {/*    <ListItemIcon>*/}
+                                                {/*        <IconFileExport stroke={1.5} size='1.3rem' />*/}
+                                                {/*    </ListItemIcon>*/}
+                                                {/*    <ListItemText primary={<Typography variant='body2'>Export Database</Typography>} />*/}
+                                                {/*</ListItemButton>*/}
+                                                {/*<ListItemButton*/}
+                                                {/*    sx={{ borderRadius: `${customization.borderRadius}px` }}*/}
+                                                {/*    onClick={() => {*/}
+                                                {/*        setOpen(false)*/}
+                                                {/*        setAboutDialogOpen(true)*/}
+                                                {/*    }}*/}
+                                                {/*>*/}
+                                                {/*    <ListItemIcon>*/}
+                                                {/*        <IconInfoCircle stroke={1.5} size='1.3rem' />*/}
+                                                {/*    </ListItemIcon>*/}
+                                                {/*    <ListItemText primary={<Typography variant='body2'>About Flowise</Typography>} />*/}
+                                                {/*</ListItemButton>*/}
                                                 {((localStorage.getItem('username') && localStorage.getItem('password')) ||
                                                     localStorage.getItem('user_id')) && (
                                                     <ListItemButton
