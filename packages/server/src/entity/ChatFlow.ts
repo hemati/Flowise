@@ -8,7 +8,7 @@ export class ChatFlow implements IChatFlow {
     id: string
 
     @Column()
-    user_id: string
+    userid: string
 
     @Column()
     name: string

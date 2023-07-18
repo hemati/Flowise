@@ -532,14 +532,14 @@ export const compareKeys = (storedKey: string, suppliedKey: string): boolean => 
  * Get API keys
  * @returns {Promise<ICommonObject[]>}
  */
-export const getAPIKeys = async (user_id: string | undefined): Promise<ICommonObject[]> => {
+export const getAPIKeys = async (userid: string | undefined): Promise<ICommonObject[]> => {
     try {
         const content = await fs.promises.readFile(getAPIKeyPath(), 'utf8')
         const allAPIKeys = JSON.parse(content)
-        if (!user_id) {
+        if (!userid) {
             return allAPIKeys
         }
-        return allAPIKeys.filter((key: { user_id: string | undefined }) => key.user_id === user_id)
+        return allAPIKeys.filter((key: { userid: string | undefined }) => key.userid === userid)
     } catch (error) {
         const keyName = 'DefaultKey'
         const apiKey = generateAPIKey()
@@ -551,7 +551,7 @@ export const getAPIKeys = async (user_id: string | undefined): Promise<ICommonOb
                 apiSecret,
                 createdAt: moment().format('DD-MMM-YY'),
                 id: randomBytes(16).toString('hex'),
-                user_id
+                userid
             }
         ]
         await fs.promises.writeFile(getAPIKeyPath(), JSON.stringify(content), 'utf8')
@@ -564,7 +564,7 @@ export const getAPIKeys = async (user_id: string | undefined): Promise<ICommonOb
  * @param {string} keyName
  * @returns {Promise<ICommonObject[]>}
  */
-export const addAPIKey = async (keyName: string, user_id: string | undefined): Promise<ICommonObject[]> => {
+export const addAPIKey = async (keyName: string, userid: string | undefined): Promise<ICommonObject[]> => {
     const existingAPIKeys = await getAPIKeys(undefined)
     const apiKey = generateAPIKey()
     const apiSecret = generateSecretHash(apiKey)
@@ -576,7 +576,7 @@ export const addAPIKey = async (keyName: string, user_id: string | undefined): P
             apiSecret,
             createdAt: moment().format('DD-MMM-YY'),
             id: randomBytes(16).toString('hex'),
-            user_id
+            userid
         }
     ]
     await fs.promises.writeFile(getAPIKeyPath(), JSON.stringify(content), 'utf8')

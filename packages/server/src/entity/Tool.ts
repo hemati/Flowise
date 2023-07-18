@@ -32,5 +32,5 @@ export class Tool implements ITool {
     updatedDate: Date
 
     @Column()
-    user_id: string
+    userid: string
 }

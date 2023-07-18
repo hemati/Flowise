@@ -31,11 +31,11 @@ const App = () => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             dispatch(setAuthenticated(!!user))
             if (user) {
-                localStorage.setItem('user_id', user.uid)
+                localStorage.setItem('userid', user.uid)
                 localStorage.setItem('username', user.displayName ?? user.email)
                 navigate('/chatflows')
             } else {
-                localStorage.removeItem('user_id')
+                localStorage.removeItem('userid')
                 localStorage.removeItem('username')
             }
             setLoading(false)
