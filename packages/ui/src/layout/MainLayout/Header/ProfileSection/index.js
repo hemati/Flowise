@@ -232,7 +232,7 @@ const ProfileSection = ({ username, handleLogout }) => {
                                                 {/*    <ListItemText primary={<Typography variant='body2'>About Flowise</Typography>} />*/}
                                                 {/*</ListItemButton>*/}
                                                 {((localStorage.getItem('username') && localStorage.getItem('password')) ||
-                                                    localStorage.getItem('user_id')) && (
+                                                    localStorage.getItem('userid')) && (
                                                     <ListItemButton
                                                         sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                         onClick={handleLogout}

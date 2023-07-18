@@ -187,13 +187,14 @@ export class App {
 
         // Get all chatflows
         this.app.get('/api/v1/chatflows', async (req: Request, res: Response) => {
-            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
-            if (!userId) {
-                res.status(400).send('user_id header is missing') // Return an error if the user_id is missing
+            console.log(req.headers)
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
                 return
             }
             const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).findBy({
-                user_id: userId
+                userid: userid
             })
             return res.json(chatflows)
         })
@@ -238,8 +239,9 @@ export class App {
 
         // Save chatflow
         this.app.post('/api/v1/chatflows', async (req: Request, res: Response) => {
+            console.log('POST /api/v1/chatflows')
             const body = req.body
-            body['user_id'] = req.headers.user_id
+            body['userid'] = req.headers.userid
             const newChatFlow = new ChatFlow()
             Object.assign(newChatFlow, body)
 
@@ -363,13 +365,13 @@ export class App {
 
         // Get all tools
         this.app.get('/api/v1/tools', async (req: Request, res: Response) => {
-            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
-            if (!userId) {
-                res.status(400).send('user_id header is missing') // Return an error if the user_id is missing
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
                 return
             }
             const tools = await this.AppDataSource.getRepository(Tool).findBy({
-                user_id: userId
+                userid: userid
             })
             return res.json(tools)
         })
@@ -384,13 +386,13 @@ export class App {
 
         // Add tool
         this.app.post('/api/v1/tools', async (req: Request, res: Response) => {
-            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
-            if (!userId) {
-                res.status(400).send('user_id header is missing') // Return an error if the user_id is missing
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
                 return
             }
             const body = req.body
-            body.user_id = userId
+            body.userid = userid
             const newTool = new Tool()
             Object.assign(newTool, body)
 
@@ -447,52 +449,52 @@ export class App {
         // Export Load Chatflow & ChatMessage & Apikeys
         // ----------------------------------------
 
-        this.app.get('/api/v1/database/export', async (req: Request, res: Response) => {
-            const chatmessages = await this.AppDataSource.getRepository(ChatMessage).find()
-            const chatflows = await this.AppDataSource.getRepository(ChatFlow).find()
-            const apikeys = await getAPIKeys(undefined)
-            const result: IDatabaseExport = {
-                chatmessages,
-                chatflows,
-                apikeys
-            }
-            return res.json(result)
-        })
-
-        this.app.post('/api/v1/database/load', async (req: Request, res: Response) => {
-            const databaseItems: IDatabaseExport = req.body
-
-            await this.AppDataSource.getRepository(ChatFlow).delete({})
-            await this.AppDataSource.getRepository(ChatMessage).delete({})
-
-            let error = ''
-
-            // Get a new query runner instance
-            const queryRunner = this.AppDataSource.createQueryRunner()
-
-            // Start a new transaction
-            await queryRunner.startTransaction()
-
-            try {
-                const chatflows: ChatFlow[] = databaseItems.chatflows
-                const chatmessages: ChatMessage[] = databaseItems.chatmessages
-
-                await queryRunner.manager.insert(ChatFlow, chatflows)
-                await queryRunner.manager.insert(ChatMessage, chatmessages)
-
-                await queryRunner.commitTransaction()
-            } catch (err: any) {
-                error = err?.message ?? 'Error loading database'
-                await queryRunner.rollbackTransaction()
-            } finally {
-                await queryRunner.release()
-            }
-
-            await replaceAllAPIKeys(databaseItems.apikeys)
-
-            if (error) return res.status(500).send(error)
-            return res.status(201).send('OK')
-        })
+        // this.app.get('/api/v1/database/export', async (req: Request, res: Response) => {
+        //     const chatmessages = await this.AppDataSource.getRepository(ChatMessage).find()
+        //     const chatflows = await this.AppDataSource.getRepository(ChatFlow).find()
+        //     const apikeys = await getAPIKeys(undefined)
+        //     const result: IDatabaseExport = {
+        //         chatmessages,
+        //         chatflows,
+        //         apikeys
+        //     }
+        //     return res.json(result)
+        // })
+        //
+        // this.app.post('/api/v1/database/load', async (req: Request, res: Response) => {
+        //     const databaseItems: IDatabaseExport = req.body
+        //
+        //     await this.AppDataSource.getRepository(ChatFlow).delete({})
+        //     await this.AppDataSource.getRepository(ChatMessage).delete({})
+        //
+        //     let error = ''
+        //
+        //     // Get a new query runner instance
+        //     const queryRunner = this.AppDataSource.createQueryRunner()
+        //
+        //     // Start a new transaction
+        //     await queryRunner.startTransaction()
+        //
+        //     try {
+        //         const chatflows: ChatFlow[] = databaseItems.chatflows
+        //         const chatmessages: ChatMessage[] = databaseItems.chatmessages
+        //
+        //         await queryRunner.manager.insert(ChatFlow, chatflows)
+        //         await queryRunner.manager.insert(ChatMessage, chatmessages)
+        //
+        //         await queryRunner.commitTransaction()
+        //     } catch (err: any) {
+        //         error = err?.message ?? 'Error loading database'
+        //         await queryRunner.rollbackTransaction()
+        //     } finally {
+        //         await queryRunner.release()
+        //     }
+        //
+        //     await replaceAllAPIKeys(databaseItems.apikeys)
+        //
+        //     if (error) return res.status(500).send(error)
+        //     return res.status(201).send('OK')
+        // })
 
         // ----------------------------------------
         // Prediction
@@ -557,15 +559,15 @@ export class App {
 
         // Get api keys
         this.app.get('/api/v1/apikey', async (req: Request, res: Response) => {
-            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
-            const keys = await getAPIKeys(userId)
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            const keys = await getAPIKeys(userid)
             return res.json(keys)
         })
 
         // Add new api key
         this.app.post('/api/v1/apikey', async (req: Request, res: Response) => {
-            const userId = Array.isArray(req.headers.user_id) ? req.headers.user_id[0] : req.headers.user_id
-            const keys = await addAPIKey(req.body.keyName, userId)
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            const keys = await addAPIKey(req.body.keyName, userid)
             return res.json(keys)
         })
 

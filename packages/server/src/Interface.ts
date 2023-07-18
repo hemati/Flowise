@@ -7,7 +7,7 @@ export type MessageType = 'apiMessage' | 'userMessage'
  */
 export interface IChatFlow {
     id: string
-    user_id: string
+    userid: string
     name: string
     flowData: string
     updatedDate: Date
@@ -29,6 +29,7 @@ export interface IChatMessage {
 
 export interface ITool {
     id: string
+    userid: string
     name: string
     description: string
     color: string

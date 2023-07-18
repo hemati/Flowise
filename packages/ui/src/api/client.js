@@ -13,7 +13,7 @@ apiClient.interceptors.request.use(function (config) {
     console.log('localStorage', localStorage)
     const username = localStorage.getItem('username')
     const password = localStorage.getItem('password')
-    const user_id = localStorage.getItem('user_id')
+    const userid = localStorage.getItem('userid')
 
     if (username && password) {
         config.auth = {
@@ -22,7 +22,7 @@ apiClient.interceptors.request.use(function (config) {
         }
     }
 
-    config.headers['user_id'] = user_id
+    config.headers['userid'] = userid
 
     return config
 })

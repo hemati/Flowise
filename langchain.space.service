@@ -1,0 +1,14 @@
+[Unit]
+Description=Langchain Space
+
+[Service]
+ExecStart=/home/wahed/.nvm/versions/node/v18.16.1/bin/yarn start
+#Restart=always
+User=wahed
+# Note Debian/Ubuntu uses 'nogroup', RHEL/Fedora uses 'nobody'
+Group=wahed
+WorkingDirectory=/home/wahed/git/Flowise
+Environment=PATH=/usr/bin:/usr/local/bin:/home/wahed/.nvm/versions/node/v18.16.1/bin/
+
+[Install]
+WantedBy=multi-user.target

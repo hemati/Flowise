@@ -13,7 +13,7 @@
         "build": "turbo run build",
         "build-force": "turbo run build --force",
         "dev": "turbo run dev --parallel",
-        "start": "cd packages/server/bin && ./run start",
+        "start": "run-script-os",
         "start:windows": "cd packages/server/bin && run start",
         "start:default": "cd packages/server/bin && ./run start",
         "clean": "npm exec -ws -- rimraf dist build",
