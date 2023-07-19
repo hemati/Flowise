@@ -13,7 +13,7 @@ export class ChatFlow implements IChatFlow {
     @Column()
     name: string
 
-    @Column()
+    @Column({ type: "text" })
     flowData: string
 
     @Column({ nullable: true })
