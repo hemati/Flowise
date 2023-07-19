@@ -3,7 +3,7 @@ Description=Langchain Space
 
 [Service]
 ExecStart=/home/wahed/.nvm/versions/node/v18.16.1/bin/yarn start
-#Restart=always
+Restart=always
 User=wahed
 # Note Debian/Ubuntu uses 'nogroup', RHEL/Fedora uses 'nobody'
 Group=wahed
