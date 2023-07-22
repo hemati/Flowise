@@ -5,11 +5,13 @@ import {
     createUserWithEmailAndPassword,
     signInWithPopup,
     GoogleAuthProvider,
-    GithubAuthProvider
+    GithubAuthProvider,
+    TwitterAuthProvider
 } from 'firebase/auth'
 import { TextField, Typography, Grid, Divider } from '@mui/material'
 import GoogleIcon from '@mui/icons-material/Google'
 import GitHubIcon from '@mui/icons-material/GitHub'
+import TwitterIcon from '@mui/icons-material/Twitter'
 import { useTheme } from '@mui/material/styles'
 import { StyledButton } from 'ui-component/button/StyledButton'
 import MainCard from 'ui-component/cards/MainCard'
@@ -24,6 +26,7 @@ function LoginForm() {
     const [error, setError] = useState(null)
     const googleProvider = new GoogleAuthProvider()
     const githubProvider = new GithubAuthProvider()
+    const twitterProvider = new TwitterAuthProvider()
 
     const handleSubmission = async (event) => {
         event.preventDefault()
@@ -59,6 +62,16 @@ function LoginForm() {
             await signInWithPopup(auth, githubProvider)
             // Once the user is logged in, you could do a redirect here
         } catch (error) {
+            setError(error.message)
+        }
+    }
+
+    const handleTwitterSignIn = async () => {
+        try {
+            await signInWithPopup(auth, twitterProvider)
+            // Once the user is logged in, you could do a redirect here
+        } catch (error) {
+            console.log(error)
             setError(error.message)
         }
     }
@@ -103,6 +116,16 @@ function LoginForm() {
                         onClick={handleGithubSignIn}
                     >
                         Sign in with GitHub
+                    </StyledButton>
+                </Grid>
+                <Grid item>
+                    <StyledButton
+                        variant='contained'
+                        sx={{ color: 'white', backgroundColor: '#1DA1F2' }} // Twitter color
+                        startIcon={<TwitterIcon />}
+                        onClick={handleTwitterSignIn}
+                    >
+                        Sign in with Twitter
                     </StyledButton>
                 </Grid>
             </Grid>
