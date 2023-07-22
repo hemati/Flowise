@@ -54,6 +54,7 @@
         "node": ">=18.15.0"
     },
     "dependencies": {
-        "firebase": "^9.23.0"
+        "firebase": "^9.23.0",
+        "@firebase/analytics": "^0.10.0"
     }
 }
