@@ -17,8 +17,6 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from 'firebaseSetup'
 import { setAuthenticated } from './store/actions' // make sure path is correct
 import { useNavigate } from 'react-router-dom'
-import useApi from './hooks/useApi'
-import chatflowsApi from './api/chatflows'
 // ==============================|| APP ||============================== //
 
 const App = () => {
@@ -28,13 +26,6 @@ const App = () => {
     const isAuthenticated = useSelector((state) => state.authentication.isAuthenticated)
     // Add loading state
     const [loading, setLoading] = useState(true)
-    const getAllChatflowsApi = useApi(chatflowsApi.getAllChatflows)
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            getAllChatflowsApi.request()
-        }
-    }, [isAuthenticated])
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -42,11 +33,7 @@ const App = () => {
             if (user) {
                 localStorage.setItem('userid', user.uid)
                 localStorage.setItem('username', user.displayName ?? user.email)
-                if (getAllChatflowsApi.data) {
-                    navigate('/chatflows')
-                } else {
-                    navigate('/marketplaces')
-                }
+                navigate('/marketplaces')
             } else {
                 localStorage.removeItem('userid')
                 localStorage.removeItem('username')
