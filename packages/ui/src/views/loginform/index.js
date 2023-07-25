@@ -91,37 +91,41 @@ function LoginForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <StyledButton variant='contained' sx={{ color: 'white' }} type='submit'>
-                    Log In / Register
-                </StyledButton>
+                <Grid container justifyContent='center' spacing={2}>
+                    <Grid item xs={12} sm={3}>
+                        <StyledButton variant='contained' sx={{ color: 'white', width: '100%' }} type='submit'>
+                            Log In / Register
+                        </StyledButton>
+                    </Grid>
+                </Grid>
                 {error && <p>{error}</p>}
             </form>
             <Divider sx={{ my: 2 }}>Or</Divider>
             <Grid container justifyContent='center' spacing={2}>
-                <Grid item>
+                <Grid item xs={12} sm={3}>
                     <StyledButton
                         variant='contained'
-                        sx={{ color: 'white', backgroundColor: '#db4437' }}
+                        sx={{ color: 'white', backgroundColor: '#db4437', width: '100%' }}
                         startIcon={<GoogleIcon />}
                         onClick={handleGoogleSignIn}
                     >
                         Sign in with Google
                     </StyledButton>
                 </Grid>
-                <Grid item>
+                <Grid item xs={12} sm={3}>
                     <StyledButton
                         variant='contained'
-                        sx={{ color: 'white', backgroundColor: '#24292e' }}
+                        sx={{ color: 'white', backgroundColor: '#24292e', width: '100%' }}
                         startIcon={<GitHubIcon />}
                         onClick={handleGithubSignIn}
                     >
                         Sign in with GitHub
                     </StyledButton>
                 </Grid>
-                <Grid item>
+                <Grid item xs={12} sm={3}>
                     <StyledButton
                         variant='contained'
-                        sx={{ color: 'white', backgroundColor: '#1DA1F2' }} // Twitter color
+                        sx={{ color: 'white', backgroundColor: '#1DA1F2', width: '100%' }} // Twitter color
                         startIcon={<TwitterIcon />}
                         onClick={handleTwitterSignIn}
                     >

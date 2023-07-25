@@ -1,8 +1,8 @@
 // assets
-import { IconHierarchy, IconBuildingStore, IconKey, IconTool } from '@tabler/icons'
+import { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconBook } from '@tabler/icons'
 
 // constant
-const icons = { IconHierarchy, IconBuildingStore, IconKey, IconTool }
+const icons = { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconBook }
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
@@ -42,6 +42,15 @@ const dashboard = {
             url: '/apikey',
             icon: icons.IconKey,
             breadcrumbs: true
+        },
+        {
+            id: 'docs',
+            title: 'Docs',
+            type: 'item',
+            url: 'https://docs.langchain.space',
+            icon: icons.IconBook,
+            target: '_blank',
+            external: true
         }
     ]
 }
