@@ -857,6 +857,7 @@ export const transformToCredentialEntity = async (body: ICredentialReqBody): Pro
     const encryptedData = await encryptCredentialData(body.plainDataObj)
 
     const credentialBody = {
+        userid: body.userid,
         name: body.name,
         credentialName: body.credentialName,
         encryptedData
