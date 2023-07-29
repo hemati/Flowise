@@ -461,7 +461,9 @@ export class App {
                 }
                 return res.json(returnCredentials)
             } else {
-                const credentials = await this.AppDataSource.getRepository(Credential).find()
+                const credentials = await this.AppDataSource.getRepository(Credential).findBy({
+                    userid: userid
+                })
                 const returnCredentials = []
                 for (const credential of credentials) {
                     returnCredentials.push(omit(credential, ['encryptedData']))
