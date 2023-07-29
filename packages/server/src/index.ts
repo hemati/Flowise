@@ -246,7 +246,6 @@ export class App {
 
         // Get all chatflows
         this.app.get('/api/v1/chatflows', async (req: Request, res: Response) => {
-            console.log(req.headers)
             const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
             if (!userid) {
                 res.status(400).send('userid header is missing') // Return an error if the userid is missing
@@ -303,7 +302,6 @@ export class App {
 
         // Save chatflow
         this.app.post('/api/v1/chatflows', async (req: Request, res: Response) => {
-            console.log('POST /api/v1/chatflows')
             const body = req.body
             body['userid'] = req.headers.userid
             const newChatFlow = new ChatFlow()
