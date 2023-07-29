@@ -425,7 +425,9 @@ export class App {
 
         // Create new credential
         this.app.post('/api/v1/credentials', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
             const body = req.body
+            body['userid'] = userid
             const newCredential = await transformToCredentialEntity(body)
             const credential = this.AppDataSource.getRepository(Credential).create(newCredential)
             const results = await this.AppDataSource.getRepository(Credential).save(credential)
@@ -434,19 +436,22 @@ export class App {
 
         // Get all credentials
         this.app.get('/api/v1/credentials', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
             if (req.query.credentialName) {
                 let returnCredentials = []
                 if (Array.isArray(req.query.credentialName)) {
                     for (let i = 0; i < req.query.credentialName.length; i += 1) {
                         const name = req.query.credentialName[i] as string
                         const credentials = await this.AppDataSource.getRepository(Credential).findBy({
-                            credentialName: name
+                            credentialName: name,
+                            userid: userid
                         })
                         returnCredentials.push(...credentials)
                     }
                 } else {
                     const credentials = await this.AppDataSource.getRepository(Credential).findBy({
-                        credentialName: req.query.credentialName as string
+                        credentialName: req.query.credentialName as string,
+                        userid: userid
                     })
                     returnCredentials = [...credentials]
                 }
