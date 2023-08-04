@@ -159,6 +159,7 @@ export interface IActiveChatflows {
 
 export interface IOverrideConfig {
     node: string
+    nodeId: string
     label: string
     name: string
     type: string
