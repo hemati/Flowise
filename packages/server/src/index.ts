@@ -9,14 +9,7 @@ import { Server } from 'socket.io'
 import logger from './utils/logger'
 import { expressRequestLogger } from './utils/logger'
 
-import {
-    IChatFlow,
-    IncomingInput,
-    IReactFlowNode,
-    IReactFlowObject,
-    INodeData,
-    ICredentialReturnResponse
-} from './Interface'
+import { IChatFlow, IncomingInput, IReactFlowNode, IReactFlowObject, INodeData, ICredentialReturnResponse } from './Interface'
 import {
     getNodeModulesPackagePath,
     getStartingNodes,
@@ -33,7 +26,6 @@ import {
     mapMimeTypeToInputField,
     findAvailableConfigs,
     isSameOverrideConfig,
-    replaceAllAPIKeys,
     isFlowValidForStream,
     isVectorStoreFaiss,
     databaseEntities,
