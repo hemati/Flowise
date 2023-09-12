@@ -1,36 +1,39 @@
 /* eslint-disable */
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm'
-import { ITool } from '../Interface'
+import { IChatFlow } from '../../Interface'
 
 @Entity()
-export class Tool implements ITool {
+export class ChatFlow implements IChatFlow {
     @PrimaryGeneratedColumn('uuid')
     id: string
+
+    @Column()
+    userid: string
 
     @Column()
     name: string
 
     @Column({ type: 'text' })
-    description: string
-
-    @Column()
-    color: string
+    flowData: string
 
     @Column({ nullable: true })
-    iconSrc?: string
+    deployed?: boolean
 
     @Column({ nullable: true })
-    schema?: string
+    isPublic?: boolean
 
     @Column({ nullable: true })
-    func?: string
+    apikeyid?: string
+
+    @Column({ nullable: true, type: 'text' })
+    chatbotConfig?: string
+
+    @Column({ nullable: true, type: 'text' })
+    apiConfig?: string
 
     @CreateDateColumn()
     createdDate: Date
 
     @UpdateDateColumn()
     updatedDate: Date
-
-    @Column()
-    userid: string
 }
