@@ -42,7 +42,7 @@ const App = () => {
         })
 
         return () => unsubscribe()
-    }, [dispatch, navigate])
+    }, [dispatch])
 
     useEffect(() => {
         if (!isAuthenticated && !loading) {
