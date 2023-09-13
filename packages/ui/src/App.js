@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { ThemeProvider } from '@mui/material/styles'
@@ -42,7 +42,7 @@ const App = () => {
         })
 
         return () => unsubscribe()
-    }, [dispatch])
+    }, [dispatch, navigate])
 
     useEffect(() => {
         if (!isAuthenticated && !loading) {

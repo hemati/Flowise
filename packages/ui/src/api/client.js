@@ -9,8 +9,6 @@ const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use(function (config) {
-    console.log('config', config)
-    console.log('localStorage', localStorage)
     const username = localStorage.getItem('username')
     const password = localStorage.getItem('password')
     const userid = localStorage.getItem('userid')
