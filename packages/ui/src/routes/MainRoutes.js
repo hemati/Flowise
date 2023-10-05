@@ -33,6 +33,8 @@ const MainRoutes = {
             element: <Chatflows />
         },
         {
+            id: 'chatflows',
+            introId: 'intro-chatflows', // <-- This is the ID used for intro.js
             path: '/chatflows',
             element: <Chatflows />
         },

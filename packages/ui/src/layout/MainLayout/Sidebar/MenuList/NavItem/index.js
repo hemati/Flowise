@@ -98,6 +98,7 @@ const NavItem = ({ item, level, navType, onClick, onUploadFile }) => {
     return (
         <ListItemButton
             {...listItemProps}
+            id={item.id || undefined}
             disabled={item.disabled}
             sx={{
                 borderRadius: `${customization.borderRadius}px`,
