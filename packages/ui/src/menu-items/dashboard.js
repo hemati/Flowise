@@ -12,7 +12,7 @@ const dashboard = {
     type: 'group',
     children: [
         {
-            id: 'chatflows',
+            id: 'chatflowsitem',
             title: 'Chatflows',
             type: 'item',
             url: '/chatflows',
