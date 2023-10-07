@@ -15,10 +15,10 @@ import NavigationScroll from 'layout/NavigationScroll'
 
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from 'firebaseSetup'
-import { setAuthenticated } from './store/actions' // make sure path is correct
+import { SET_MENU, setAuthenticated } from './store/actions' // make sure path is correct
 import { useNavigate } from 'react-router-dom'
 import 'intro.js/introjs.css'
-import { Steps, Hints } from 'intro.js-react'
+import { Steps } from 'intro.js-react'
 import $ from 'jquery'
 
 function findClosestDivWithClassByText(text, className) {
@@ -44,27 +44,43 @@ const App = () => {
     // Define your steps here. This is just an example.
     const introSteps = [
         {
-            intro: 'Welcome to our app!'
+            title: 'Welcome to LangChain.Space!',
+            intro:
+                'Start building Language Model apps with LangChain.Space! Here, making and managing your LLM ' +
+                'flows is easy and fast. Explore custom components and see your apps come to life swiftly. Your path ' +
+                'to simple, effective LLM app creation begins here. Dive in!'
         },
         {
             element: '#chatflowsitem',
-            intro: 'This is a tooltip.'
+            intro:
+                'Step into Chatflows, where your crafted flows come alive! ' +
+                "This is your personal space to view, manage, and refine all the LLM flows you've saved."
         },
         {
             element: '#marketplaces',
-            intro: 'This is a tooltip.'
+            intro:
+                'Enter the Hub, a repository of predefined flows. ' +
+                'Here, explore a curated selection of expertly crafted flows, ready for integration into your projects.'
         },
         {
             element: '#tools',
-            intro: 'This is a tooltip.'
+            intro:
+                'Step into Tools, your gateway to enhanced interactions! Here lies a suite of functions empowering ' +
+                "your agents to engage with the world. Whether it's generic utilities like search, leveraging other" +
+                " chains, or interacting with different agents, Tools is engineered to broaden your agents' capabilities."
         },
         {
             element: '#docs',
-            intro: 'This is a tooltip.'
+            intro:
+                'Explore Docs, your repository of in-depth information. Here, access detailed documentation ' +
+                'tailored to facilitate a thorough understanding of functionalities and features.'
         },
         {
+            title: 'Begin Your Exploration Now!',
             element: '#simpleConversationChainFlowItem',
-            intro: 'This is a tooltip.'
+            intro:
+                'Kickstart your journey by utilizing a predefined Simple Conversation Chain from the Hub. This ' +
+                'hands-on start will guide you through key platform features, enriching your understanding swiftly.'
         }
         // ... add more steps as required
     ]
@@ -96,7 +112,7 @@ const App = () => {
         if ((!tooltipShown && isAuthenticated) || true) {
             const tourStartTimeout = setTimeout(() => {
                 // Assuming you have a state to control whether the tour is shown or not
-                // setTourEnabled(true);  // For this example, I'm assuming such a state exists.
+                dispatch({ type: SET_MENU, opened: true }) // Open the navbar
                 setTourActive(true)
             }, 1000) // Delay of 1 second
             return () => clearTimeout(tourStartTimeout)
