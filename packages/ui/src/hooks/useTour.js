@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
+import { SET_MENU } from '../store/actions' // make sure path is correct
 
 const useTour = () => {
     const dispatch = useDispatch()
@@ -25,7 +26,7 @@ const useTour = () => {
         const tooltipCanvasShown = localStorage.getItem('tooltipCanvasShown')
         if (!tooltipShown && isAuthenticated && pathSegments[pathSegments.length - 1] === 'marketplaces') {
             const tourStartTimeout = setTimeout(() => {
-                dispatch({ type: 'SET_MENU', opened: true })
+                dispatch({ type: SET_MENU, opened: true })
                 setTourActive(true)
             }, 2000)
             return () => clearTimeout(tourStartTimeout)
