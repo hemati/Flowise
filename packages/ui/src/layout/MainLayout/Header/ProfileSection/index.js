@@ -30,7 +30,7 @@ import { BackdropLoader } from 'ui-component/loading/BackdropLoader'
 import AboutDialog from 'ui-component/dialog/AboutDialog'
 
 // assets
-import { IconLogout, IconSettings, IconFileExport, IconFileDownload, IconInfoCircle } from '@tabler/icons'
+import { IconLogout, IconSettings } from '@tabler/icons'
 
 // API
 import databaseApi from 'api/database'
@@ -42,8 +42,6 @@ import './index.css'
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = ({ username, handleLogout }) => {
-    console.log('username', username)
-    console.log('handleLogout', handleLogout)
     const theme = useTheme()
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -66,25 +64,6 @@ const ProfileSection = ({ username, handleLogout }) => {
 
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen)
-    }
-
-    const handleExportDB = async () => {
-        setOpen(false)
-        try {
-            const response = await databaseApi.getExportDatabase()
-            const exportItems = response.data
-            let dataStr = JSON.stringify(exportItems)
-            let dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
-
-            let exportFileDefaultName = `DB.json`
-
-            let linkElement = document.createElement('a')
-            linkElement.setAttribute('href', dataUri)
-            linkElement.setAttribute('download', exportFileDefaultName)
-            linkElement.click()
-        } catch (e) {
-            console.error(e)
-        }
     }
 
     const handleFileUpload = (e) => {
@@ -198,39 +177,6 @@ const ProfileSection = ({ username, handleLogout }) => {
                                                     }
                                                 }}
                                             >
-                                                {/*<ListItemButton*/}
-                                                {/*    sx={{ borderRadius: `${customization.borderRadius}px` }}*/}
-                                                {/*    onClick={() => {*/}
-                                                {/*        setOpen(false)*/}
-                                                {/*        uploadRef.current.click()*/}
-                                                {/*    }}*/}
-                                                {/*>*/}
-                                                {/*    <ListItemIcon>*/}
-                                                {/*        <IconFileDownload stroke={1.5} size='1.3rem' />*/}
-                                                {/*    </ListItemIcon>*/}
-                                                {/*    <ListItemText primary={<Typography variant='body2'>Load Database</Typography>} />*/}
-                                                {/*</ListItemButton>*/}
-                                                {/*<ListItemButton*/}
-                                                {/*    sx={{ borderRadius: `${customization.borderRadius}px` }}*/}
-                                                {/*    onClick={handleExportDB}*/}
-                                                {/*>*/}
-                                                {/*    <ListItemIcon>*/}
-                                                {/*        <IconFileExport stroke={1.5} size='1.3rem' />*/}
-                                                {/*    </ListItemIcon>*/}
-                                                {/*    <ListItemText primary={<Typography variant='body2'>Export Database</Typography>} />*/}
-                                                {/*</ListItemButton>*/}
-                                                {/*<ListItemButton*/}
-                                                {/*    sx={{ borderRadius: `${customization.borderRadius}px` }}*/}
-                                                {/*    onClick={() => {*/}
-                                                {/*        setOpen(false)*/}
-                                                {/*        setAboutDialogOpen(true)*/}
-                                                {/*    }}*/}
-                                                {/*>*/}
-                                                {/*    <ListItemIcon>*/}
-                                                {/*        <IconInfoCircle stroke={1.5} size='1.3rem' />*/}
-                                                {/*    </ListItemIcon>*/}
-                                                {/*    <ListItemText primary={<Typography variant='body2'>About Flowise</Typography>} />*/}
-                                                {/*</ListItemButton>*/}
                                                 {((localStorage.getItem('username') && localStorage.getItem('password')) ||
                                                     localStorage.getItem('userid')) && (
                                                     <ListItemButton
