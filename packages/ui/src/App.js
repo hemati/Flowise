@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { ThemeProvider } from '@mui/material/styles'
@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom'
 import 'intro.js/introjs.css'
 import { Steps } from 'intro.js-react'
 import $ from 'jquery'
+import useTour from './hooks/useTour'
 
 function findClosestDivWithClassByText(text, className) {
     return $(`p:contains("${text}")`).closest(`div.${className}`)[0]
@@ -33,10 +34,9 @@ const App = () => {
     const isAuthenticated = useSelector((state) => state.authentication.isAuthenticated)
     // Add loading state
     const [loading, setLoading] = useState(true)
-    const [isTourActive, setTourActive] = useState(false)
+    const { isTourActive, isCanvasTourActive, handleTourExit, handleTourExitCanvas } = useTour()
 
     // Define the ref for intro.js
-    console.log('test')
     const targetElement = findClosestDivWithClassByText('Simple Conversation Chain', 'MuiPaper-root')
     if (targetElement) {
         targetElement.setAttribute('id', 'simpleConversationChainFlowItem')
@@ -80,9 +80,45 @@ const App = () => {
             element: '#simpleConversationChainFlowItem',
             intro:
                 'Kickstart your journey by utilizing a predefined Simple Conversation Chain from the Hub. This ' +
-                'hands-on start will guide you through key platform features, enriching your understanding swiftly.'
+                'hands-on start will guide you through key platform features, enriching your understanding swiftly.\n' +
+                'To start, click on the tile and then on "Use Tempalte".'
         }
         // ... add more steps as required
+    ]
+    const introCanvasSteps = [
+        {
+            title: 'Canvas Flow Editor!',
+            intro:
+                "Here's where your creative journey begins. You've chosen a flow template, and now it's time to bring" +
+                ' it to life. Think of this canvas as your personal workspace, where each node represents a unique ' +
+                'step or action in your flow.'
+        },
+        {
+            element: '#add_node_button',
+            title: 'Drag & Drop to Add Nodes',
+            intro:
+                'Simply drag your desired node from the palette and drop it onto the canvas. Each node is a building ' +
+                'block for your workflow. Craft your flow effortlessly using drag and drop. '
+        },
+        {
+            element: '.react-flow__node:first-of-type',
+            title: 'Configuring Your Node',
+            intro: 'Dive into the settings of each node to modify configurations and add the necessary credentials.'
+        },
+        {
+            element: '#save_chatflow_button',
+            title: 'Save to Update',
+            intro:
+                'Before moving on, remember to save your flow. Not only does this preserve your configurations, but ' +
+                "it's crucial for updating the functionality. Ensure every change you make takes effect by hitting the save button."
+        },
+        {
+            element: '#chat_button',
+            title: 'Chat with Your Flow',
+            intro:
+                'All set! Now, to see your flow in action, just hit the "Chat" button. Dive into a conversation and ' +
+                "experience firsthand the functionality you've designed. Enjoy the interactive chat with your custom flow!"
+        }
     ]
 
     useEffect(() => {
@@ -106,26 +142,8 @@ const App = () => {
             navigate('/login')
         }
     }, [isAuthenticated, navigate, loading])
-    useEffect(() => {
-        const tooltipShown = localStorage.getItem('tooltipShown')
-        // eslint-disable-next-line no-constant-condition
-        if ((!tooltipShown && isAuthenticated) || true) {
-            const tourStartTimeout = setTimeout(() => {
-                // Assuming you have a state to control whether the tour is shown or not
-                dispatch({ type: SET_MENU, opened: true }) // Open the navbar
-                setTourActive(true)
-            }, 1000) // Delay of 1 second
-            return () => clearTimeout(tourStartTimeout)
-        }
-    }, [isAuthenticated]) // Empty dependency array means this useEffect will run once after the component mounts
-    const handleTourExit = () => {
-        console.log('complete')
-        // Set the flag in localStorage when the tour is exited
-        localStorage.setItem('tooltipShown', 'true')
-    }
     if (loading) {
         // Replace with a proper loading spinner or placeholder
-        console.log('test', 'Testttt')
         return <div>Loading...</div>
     }
 
@@ -147,8 +165,27 @@ const App = () => {
                         skipLabel: ''
                     }}
                     onExit={() => console.log('exit')}
+                    onChange={(step) => {
+                        if (step === introSteps.length - 1 && window.innerWidth <= 900) {
+                            dispatch({ type: SET_MENU, opened: false })
+                        }
+                    }}
                 />
-                {/* Add the Intro component and bind the ref and steps */}
+                <Steps
+                    enabled={isCanvasTourActive}
+                    steps={introCanvasSteps}
+                    initialStep={0}
+                    onComplete={handleTourExitCanvas}
+                    options={{
+                        hideNext: false,
+                        exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
+                        exitOnEsc: false, // Prevents closing the tour using the Esc key
+                        showSkip: false, // Hides the "Skip" button
+                        disableInteraction: true,
+                        skipLabel: ''
+                    }}
+                    onExit={() => console.log('exit canvas')}
+                />
                 <NavigationScroll>
                     <Routes />
                 </NavigationScroll>

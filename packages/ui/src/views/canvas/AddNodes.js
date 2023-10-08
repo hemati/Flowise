@@ -149,6 +149,7 @@ const AddNodes = ({ nodesData, node }) => {
                 aria-label='add'
                 title='Add Node'
                 onClick={handleToggle}
+                id='add_node_button'
             >
                 {open ? <IconMinus /> : <IconPlus />}
             </StyledFab>

@@ -137,6 +137,7 @@ export const ChatPopUp = ({ chatflowid }) => {
                 aria-label='chat'
                 title='Chat'
                 onClick={handleToggle}
+                id='chat_button'
             >
                 {open ? <IconX /> : <IconMessage />}
             </StyledFab>
