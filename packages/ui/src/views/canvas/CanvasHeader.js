@@ -307,7 +307,7 @@ const CanvasHeader = ({ chatflow, handleSaveFlow, handleDeleteFlow, handleLoadFl
                         </Avatar>
                     </ButtonBase>
                 )}
-                <ButtonBase title='Save Chatflow' sx={{ borderRadius: '50%', mr: 2 }}>
+                <ButtonBase title='Save Chatflow' id='save_chatflow_button' sx={{ borderRadius: '50%', mr: 2 }}>
                     <Avatar
                         variant='rounded'
                         sx={{
