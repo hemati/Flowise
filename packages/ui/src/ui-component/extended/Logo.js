@@ -15,7 +15,7 @@ const Logo = () => {
                 src={customization.isDarkMode ? logoDark : logo}
                 alt='Flowise'
             />
-            langchain.space
+            LangFlux
         </div>
     )
 }

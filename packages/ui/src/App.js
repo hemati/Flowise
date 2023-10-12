@@ -44,9 +44,9 @@ const App = () => {
     // Define your steps here. This is just an example.
     const introSteps = [
         {
-            title: 'Welcome to LangChain.Space!',
+            title: 'Welcome to LangFlux Dashboard!',
             intro:
-                'Start building Language Model apps with LangChain.Space! Here, making and managing your LLM ' +
+                'Start building Language Model apps with LangFlux! Here, making and managing your LLM ' +
                 'flows is easy and fast. Explore custom components and see your apps come to life swiftly. Your path ' +
                 'to simple, effective LLM app creation begins here. Dive in!'
         },
