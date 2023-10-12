@@ -55,7 +55,7 @@ const dashboard = {
             id: 'docs',
             title: 'Docs',
             type: 'item',
-            url: 'https://docs.langchain.space',
+            url: 'https://docs.langflux.space',
             icon: icons.IconBook,
             target: '_blank',
             external: true
