@@ -1,8 +1,8 @@
 // assets
-import { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconLock, IconBook } from '@tabler/icons'
+import { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconLock, IconBook, IconBrandDiscord } from '@tabler/icons'
 
 // constant
-const icons = { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconLock, IconBook }
+const icons = { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconLock, IconBook, IconBrandDiscord }
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
@@ -57,6 +57,15 @@ const dashboard = {
             type: 'item',
             url: 'https://docs.langflux.space',
             icon: icons.IconBook,
+            target: '_blank',
+            external: true
+        },
+        {
+            id: 'discord',
+            title: 'Discord',
+            type: 'item',
+            url: 'https://discord.gg/PTb8rEGzGz',
+            icon: icons.IconBrandDiscord,
             target: '_blank',
             external: true
         }
