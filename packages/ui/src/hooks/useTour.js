@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import { SET_MENU } from '../store/actions' // make sure path is correct
+import { logEvent } from 'firebase/analytics'
+import { analytics } from '../firebaseSetup'
 
 const useTour = () => {
     const dispatch = useDispatch()
@@ -13,11 +15,13 @@ const useTour = () => {
     const handleTourExit = () => {
         localStorage.setItem('tooltipShown', 'true')
         setTourActive(false)
+        logEvent(analytics, 'main_intro_completed')
     }
 
     const handleTourExitCanvas = () => {
         localStorage.setItem('tooltipCanvasShown', 'true')
         setCanvasTourActive(false)
+        logEvent(analytics, 'canvas_intro_completed')
     }
 
     useEffect(() => {
@@ -28,6 +32,7 @@ const useTour = () => {
             const tourStartTimeout = setTimeout(() => {
                 dispatch({ type: SET_MENU, opened: true })
                 setTourActive(true)
+                logEvent(analytics, 'main_intro_started')
             }, 2000)
             return () => clearTimeout(tourStartTimeout)
         } else {
@@ -39,6 +44,7 @@ const useTour = () => {
                 if (checkForElement()) {
                     setCanvasTourActive(true)
                     clearInterval(intervalId)
+                    logEvent(analytics, 'canvas_intro_started')
                 }
             }, 500)
             return () => clearInterval(intervalId)
