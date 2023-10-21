@@ -1,5 +1,5 @@
-import { auth } from '../../firebaseSetup' // adjust the path according to your project structure
-import { firestore } from '../../firebaseSetup' // adjust the path according to your project structure
+import { auth, firestore, analytics } from '../../firebaseSetup' // adjust the path according to your project structure
+import { logEvent } from 'firebase/analytics'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { useState } from 'react'
 import {
@@ -34,6 +34,8 @@ function LoginForm() {
             const userSnapshot = await getDoc(userRef)
 
             if (!userSnapshot.exists()) {
+                logEvent(analytics, 'registration_completed')
+
                 let [firstName, ...lastNameParts] = (userCredential.user.displayName || '').split(' ')
                 let lastName = lastNameParts.join(' ')
 
