@@ -14,7 +14,7 @@ import themes from 'themes'
 import NavigationScroll from 'layout/NavigationScroll'
 
 import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from 'firebaseSetup'
+import { auth, firestore } from 'firebaseSetup'
 import { SET_MENU, setAuthenticated } from './store/actions' // make sure path is correct
 import { useNavigate } from 'react-router-dom'
 import 'intro.js/introjs.css'
@@ -40,6 +40,28 @@ const App = () => {
     const targetElement = findClosestDivWithClassByText('Simple Conversation Chain', 'MuiPaper-root')
     if (targetElement) {
         targetElement.setAttribute('id', 'simpleConversationChainFlowItem')
+    }
+
+    const handleCheckout = async () => {
+        const docRef = await firestore
+            .collection('registrations')
+            .doc(currentUser.uid) // Ensure you have a reference to the current user's UID here
+            .collection('checkout_sessions')
+            .add({
+                price: 'price_1O4pELGil3O4bErY1SdY2sOx',
+                success_url: window.location.origin,
+                cancel_url: window.location.origin
+            })
+
+        docRef.onSnapshot((snap) => {
+            const { error, url } = snap.data()
+            if (error) {
+                alert(`An error occured: ${error.message}`)
+            }
+            if (url) {
+                window.location.assign(url)
+            }
+        })
     }
     // Define your steps here. This is just an example.
     const introSteps = [
@@ -160,49 +182,51 @@ const App = () => {
     }
 
     return (
-        <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={themes(customization)}>
-                <CssBaseline />
-                <Steps
-                    enabled={isTourActive}
-                    steps={introSteps}
-                    initialStep={0}
-                    onComplete={handleTourExit}
-                    options={{
-                        hideNext: false,
-                        exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
-                        exitOnEsc: false, // Prevents closing the tour using the Esc key
-                        showSkip: false, // Hides the "Skip" button
-                        disableInteraction: true,
-                        skipLabel: ''
-                    }}
-                    onExit={() => console.log('exit')}
-                    onChange={(step) => {
-                        if (step === introSteps.length - 1 && window.innerWidth <= 900) {
-                            dispatch({ type: SET_MENU, opened: false })
-                        }
-                    }}
-                />
-                <Steps
-                    enabled={isCanvasTourActive}
-                    steps={introCanvasSteps}
-                    initialStep={0}
-                    onComplete={handleTourExitCanvas}
-                    options={{
-                        hideNext: false,
-                        exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
-                        exitOnEsc: false, // Prevents closing the tour using the Esc key
-                        showSkip: false, // Hides the "Skip" button
-                        disableInteraction: true,
-                        skipLabel: ''
-                    }}
-                    onExit={() => console.log('exit canvas')}
-                />
-                <NavigationScroll>
-                    <Routes />
-                </NavigationScroll>
-            </ThemeProvider>
-        </StyledEngineProvider>
+        <button onClick={handleCheckout}>Checkout with Stripe</button>
+
+        // <StyledEngineProvider injectFirst>
+        //     <ThemeProvider theme={themes(customization)}>
+        //         <CssBaseline />
+        //         <Steps
+        //             enabled={isTourActive}
+        //             steps={introSteps}
+        //             initialStep={0}
+        //             onComplete={handleTourExit}
+        //             options={{
+        //                 hideNext: false,
+        //                 exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
+        //                 exitOnEsc: false, // Prevents closing the tour using the Esc key
+        //                 showSkip: false, // Hides the "Skip" button
+        //                 disableInteraction: true,
+        //                 skipLabel: ''
+        //             }}
+        //             onExit={() => console.log('exit')}
+        //             onChange={(step) => {
+        //                 if (step === introSteps.length - 1 && window.innerWidth <= 900) {
+        //                     dispatch({ type: SET_MENU, opened: false })
+        //                 }
+        //             }}
+        //         />
+        //         <Steps
+        //             enabled={isCanvasTourActive}
+        //             steps={introCanvasSteps}
+        //             initialStep={0}
+        //             onComplete={handleTourExitCanvas}
+        //             options={{
+        //                 hideNext: false,
+        //                 exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
+        //                 exitOnEsc: false, // Prevents closing the tour using the Esc key
+        //                 showSkip: false, // Hides the "Skip" button
+        //                 disableInteraction: true,
+        //                 skipLabel: ''
+        //             }}
+        //             onExit={() => console.log('exit canvas')}
+        //         />
+        //         <NavigationScroll>
+        //             <Routes />
+        //         </NavigationScroll>
+        //     </ThemeProvider>
+        // </StyledEngineProvider>
     )
 }
 
