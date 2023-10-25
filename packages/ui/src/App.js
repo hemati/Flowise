@@ -76,6 +76,11 @@ const App = () => {
                 'tailored to facilitate a thorough understanding of functionalities and features.'
         },
         {
+            title: 'Community Support',
+            element: '#discord',
+            intro: 'Join our Discord community for help and ' + 'support. Our channel is new, but we aim to build a strong community. '
+        },
+        {
             title: 'Begin Your Exploration Now!',
             element: '#simpleConversationChainFlowItem',
             intro:
@@ -117,7 +122,14 @@ const App = () => {
             title: 'Chat with Your Flow',
             intro:
                 'All set! Now, to see your flow in action, just hit the "Chat" button. Dive into a conversation and ' +
-                "experience firsthand the functionality you've designed. Enjoy the interactive chat with your custom flow!"
+                "experience firsthand the functionality you've designed. Enjoy the interactive chat with your custom flow! "
+        },
+        {
+            title: 'Join Discord',
+            intro:
+                'Join our Discord community for help and ' +
+                'support. Our channel is new, but we aim to build a strong community. ' +
+                '<br>💬 <a href="https://discord.gg/PTb8rEGzGz" target="_blank" rel="noopener noreferrer">Join us on Discord!</a>'
         }
     ]
 

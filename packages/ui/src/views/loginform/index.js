@@ -1,4 +1,6 @@
-import { auth } from '../../firebaseSetup' // adjust the path according to your project structure
+import { auth, firestore, analytics } from '../../firebaseSetup' // adjust the path according to your project structure
+import { logEvent } from 'firebase/analytics'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { useState } from 'react'
 import {
     signInWithEmailAndPassword,
@@ -24,6 +26,31 @@ function LoginForm() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState(null)
+
+    const handleOAuthSignIn = async (provider) => {
+        try {
+            const userCredential = await signInWithPopup(auth, provider)
+            const userRef = doc(firestore, 'registrations', userCredential.user.uid)
+            const userSnapshot = await getDoc(userRef)
+
+            if (!userSnapshot.exists()) {
+                logEvent(analytics, 'registration_completed')
+
+                let [firstName, ...lastNameParts] = (userCredential.user.displayName || '').split(' ')
+                let lastName = lastNameParts.join(' ')
+
+                await setDoc(userRef, {
+                    emailAddress: userCredential.user.email,
+                    firstName,
+                    lastName,
+                    subscriberEmail: userCredential.user.email
+                })
+            }
+        } catch (err) {
+            setError(err.message)
+        }
+    }
+
     const googleProvider = new GoogleAuthProvider()
     const githubProvider = new GithubAuthProvider()
     const twitterProvider = new TwitterAuthProvider()
@@ -37,42 +64,26 @@ function LoginForm() {
             if (error.code === 'auth/user-not-found') {
                 // If the user does not exist, attempt to create a new account
                 try {
-                    await createUserWithEmailAndPassword(auth, email, password)
-                    // Once the user is registered, you could do a redirect here
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+
+                    // Storing user details in Firestore for newly registered users
+                    const userRef = doc(firestore, 'registrations', userCredential.user.uid)
+                    const userSnapshot = await getDoc(userRef)
+
+                    if (!userSnapshot.exists()) {
+                        // Since we don't have first name and last name for email registrations (as of now),
+                        // I'm leaving them blank. Modify this as needed.
+                        await setDoc(userRef, {
+                            emailAddress: userCredential.user.email,
+                            subscriberEmail: userCredential.user.email
+                        })
+                    }
                 } catch (error) {
                     setError(error.message)
                 }
             } else {
                 setError(error.message)
             }
-        }
-    }
-
-    const handleGoogleSignIn = async () => {
-        try {
-            await signInWithPopup(auth, googleProvider)
-            // Once the user is logged in, you could do a redirect here
-        } catch (error) {
-            setError(error.message)
-        }
-    }
-
-    const handleGithubSignIn = async () => {
-        try {
-            await signInWithPopup(auth, githubProvider)
-            // Once the user is logged in, you could do a redirect here
-        } catch (error) {
-            setError(error.message)
-        }
-    }
-
-    const handleTwitterSignIn = async () => {
-        try {
-            await signInWithPopup(auth, twitterProvider)
-            // Once the user is logged in, you could do a redirect here
-        } catch (error) {
-            console.log(error)
-            setError(error.message)
         }
     }
 
@@ -107,7 +118,7 @@ function LoginForm() {
                         variant='contained'
                         sx={{ color: 'white', backgroundColor: '#db4437', width: '100%' }}
                         startIcon={<GoogleIcon />}
-                        onClick={handleGoogleSignIn}
+                        onClick={() => handleOAuthSignIn(googleProvider)}
                     >
                         Sign in with Google
                     </StyledButton>
@@ -117,7 +128,7 @@ function LoginForm() {
                         variant='contained'
                         sx={{ color: 'white', backgroundColor: '#24292e', width: '100%' }}
                         startIcon={<GitHubIcon />}
-                        onClick={handleGithubSignIn}
+                        onClick={() => handleOAuthSignIn(githubProvider)}
                     >
                         Sign in with GitHub
                     </StyledButton>
@@ -127,7 +138,7 @@ function LoginForm() {
                         variant='contained'
                         sx={{ color: 'white', backgroundColor: '#1DA1F2', width: '100%' }} // Twitter color
                         startIcon={<TwitterIcon />}
-                        onClick={handleTwitterSignIn}
+                        onClick={() => handleOAuthSignIn(twitterProvider)}
                     >
                         Sign in with Twitter
                     </StyledButton>
