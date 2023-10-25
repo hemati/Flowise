@@ -32,6 +32,9 @@ import robotPNG from 'assets/images/robot.png'
 import userPNG from 'assets/images/account.png'
 import { isValidURL } from 'utils/genericHelper'
 
+import { analytics } from '../../firebaseSetup'
+import { logEvent } from 'firebase/analytics'
+
 export const ChatMessage = ({ open, chatflowid, isDialog }) => {
     const theme = useTheme()
     const customization = useSelector((state) => state.customization)
@@ -134,6 +137,7 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault()
+        logEvent(analytics, 'chat_submit')
 
         if (userInput.trim() === '') {
             return
