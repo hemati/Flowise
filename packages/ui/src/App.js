@@ -14,14 +14,14 @@ import themes from 'themes'
 import NavigationScroll from 'layout/NavigationScroll'
 
 import { onAuthStateChanged } from 'firebase/auth'
-import { collection, addDoc, onSnapshot } from 'firebase/firestore'
-import { auth, firestore } from 'firebaseSetup'
+import { auth } from 'firebaseSetup'
 import { SET_MENU, setAuthenticated } from './store/actions' // make sure path is correct
 import { useNavigate } from 'react-router-dom'
 import 'intro.js/introjs.css'
 import { Steps } from 'intro.js-react'
 import $ from 'jquery'
 import useTour from './hooks/useTour'
+import CheckoutModal from './views/checkout'
 
 function findClosestDivWithClassByText(text, className) {
     return $(`p:contains("${text}")`).closest(`div.${className}`)[0]
@@ -36,72 +36,12 @@ const App = () => {
     // Add loading state
     const [loading, setLoading] = useState(true)
     const { isTourActive, isCanvasTourActive, handleTourExit, handleTourExitCanvas } = useTour()
+    const [isCheckoutModalOpen, setCheckoutModalOpen] = useState(false)
 
     // Define the ref for intro.js
     const targetElement = findClosestDivWithClassByText('Simple Conversation Chain', 'MuiPaper-root')
     if (targetElement) {
         targetElement.setAttribute('id', 'simpleConversationChainFlowItem')
-    }
-
-    // const handleCheckout = async () => {
-    //     const docRef = await firestore
-    //         .collection('registrations')
-    //         .doc(currentUser.uid) // Ensure you have a reference to the current user's UID here
-    //         .collection('checkout_sessions')
-    //         .add({
-    //             price: 'price_1O4pELGil3O4bErY1SdY2sOx',
-    //             success_url: window.location.origin,
-    //             cancel_url: window.location.origin
-    //         })
-    //
-    //     docRef.onSnapshot((snap) => {
-    //         const { error, url } = snap.data()
-    //         if (error) {
-    //             alert(`An error occured: ${error.message}`)
-    //         }
-    //         if (url) {
-    //             window.location.assign(url)
-    //         }
-    //     })
-    // }
-
-    const handleCheckout = async () => {
-        // Ensure you have a reference to the current user's UID here
-        const currentUserUID = auth.currentUser ? auth.currentUser.uid : null
-
-        if (!currentUserUID) {
-            console.error('User is not authenticated!')
-            return
-        }
-
-        try {
-            // Reference to the Firestore collection
-            const checkoutSessionsCollection = collection(firestore, 'registrations', currentUserUID, 'checkout_sessions')
-
-            // Add a new checkout session document (it will auto-generate an ID like .add() did)
-            const docRef = await addDoc(checkoutSessionsCollection, {
-                price: 'price_1O4p6yGil3O4bErYNDfoLPb5',
-                success_url: window.location.origin + '/success',
-                cancel_url: window.location.origin + '/cancel'
-            })
-
-            // Listen to real-time changes on the document
-            onSnapshot(docRef, (snap) => {
-                const data = snap.data()
-                console.log('Checkout session updated!', data)
-                // Handle potential errors
-                if (data && data.error) {
-                    alert(`An error occurred: ${data.error.message}`)
-                }
-                // If a URL is provided, redirect the user
-                if (data && data.url) {
-                    window.location.assign(data.url)
-                }
-            })
-        } catch (error) {
-            // Handle any errors that might occur during the Firestore operation
-            console.error('Error during checkout:', error)
-        }
     }
 
     // Define your steps here. This is just an example.
@@ -215,6 +155,8 @@ const App = () => {
     useEffect(() => {
         if (!isAuthenticated && !loading) {
             navigate('/login')
+        } else {
+            setCheckoutModalOpen(true)
         }
     }, [isAuthenticated, navigate, loading])
     if (loading) {
@@ -223,52 +165,50 @@ const App = () => {
     }
 
     return (
-        <button onClick={handleCheckout}>Checkout with Stripe</button>
-
-        // <StyledEngineProvider injectFirst>
-        //     <ThemeProvider theme={themes(customization)}>
-        //         <CssBaseline />
-        //         <Steps
-        //             enabled={isTourActive}
-        //             steps={introSteps}
-        //             initialStep={0}
-        //             onComplete={handleTourExit}
-        //             options={{
-        //                 hideNext: false,
-        //                 exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
-        //                 exitOnEsc: false, // Prevents closing the tour using the Esc key
-        //                 showSkip: false, // Hides the "Skip" button
-        //                 disableInteraction: true,
-        //                 skipLabel: ''
-        //             }}
-        //             onExit={() => console.log('exit')}
-        //             onChange={(step) => {
-        //                 if (step === introSteps.length - 1 && window.innerWidth <= 900) {
-        //                     dispatch({ type: SET_MENU, opened: false })
-        //                 }
-        //             }}
-        //         />
-        //         <Steps
-        //             enabled={isCanvasTourActive}
-        //             steps={introCanvasSteps}
-        //             initialStep={0}
-        //             onComplete={handleTourExitCanvas}
-        //             options={{
-        //                 hideNext: false,
-        //                 exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
-        //                 exitOnEsc: false, // Prevents closing the tour using the Esc key
-        //                 showSkip: false, // Hides the "Skip" button
-        //                 disableInteraction: true,
-        //                 skipLabel: ''
-        //             }}
-        //             onExit={() => console.log('exit canvas')}
-        //         />
-        //         <NavigationScroll>
-        //             <Routes />
-        //         </NavigationScroll>
-        //     </ThemeProvider>
-        // </StyledEngineProvider>
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={themes(customization)}>
+                <CssBaseline />
+                <Steps
+                    enabled={isTourActive}
+                    steps={introSteps}
+                    initialStep={0}
+                    onComplete={handleTourExit}
+                    options={{
+                        hideNext: false,
+                        exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
+                        exitOnEsc: false, // Prevents closing the tour using the Esc key
+                        showSkip: false, // Hides the "Skip" button
+                        disableInteraction: true,
+                        skipLabel: ''
+                    }}
+                    onExit={() => console.log('exit')}
+                    onChange={(step) => {
+                        if (step === introSteps.length - 1 && window.innerWidth <= 900) {
+                            dispatch({ type: SET_MENU, opened: false })
+                        }
+                    }}
+                />
+                <Steps
+                    enabled={isCanvasTourActive}
+                    steps={introCanvasSteps}
+                    initialStep={0}
+                    onComplete={handleTourExitCanvas}
+                    options={{
+                        hideNext: false,
+                        exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
+                        exitOnEsc: false, // Prevents closing the tour using the Esc key
+                        showSkip: false, // Hides the "Skip" button
+                        disableInteraction: true,
+                        skipLabel: ''
+                    }}
+                    onExit={() => console.log('exit canvas')}
+                />
+                <NavigationScroll>
+                    <Routes />
+                </NavigationScroll>
+            </ThemeProvider>
+            <CheckoutModal open={isCheckoutModalOpen} onClose={() => setCheckoutModalOpen(false)} />
+        </StyledEngineProvider>
     )
 }
-
 export default App
