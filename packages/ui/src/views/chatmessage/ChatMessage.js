@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 import socketIOClient from 'socket.io-client'
 import { cloneDeep } from 'lodash'
@@ -35,9 +35,13 @@ import { isValidURL } from 'utils/genericHelper'
 import { analytics } from '../../firebaseSetup'
 import { logEvent } from 'firebase/analytics'
 
+import { toggleCheckoutModal } from '../../store/actions'
+
 export const ChatMessage = ({ open, chatflowid, isDialog }) => {
     const theme = useTheme()
+    const dispatch = useDispatch()
     const customization = useSelector((state) => state.customization)
+    const isPremium = useSelector((state) => state.premium.isPremium)
 
     const ps = useRef()
 
@@ -57,7 +61,12 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
     const inputRef = useRef(null)
     const getChatmessageApi = useApi(chatmessageApi.getChatmessageFromChatflow)
     const getIsChatflowStreamingApi = useApi(chatflowsApi.getIsChatflowStreaming)
+    const getAllChatflowsApi = useApi(chatflowsApi.getAllChatflows)
+    useEffect(() => {
+        getAllChatflowsApi.request()
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     const onSourceDialogClick = (data) => {
         setSourceDialogProps({ data })
         setSourceDialogOpen(true)
@@ -138,7 +147,11 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         logEvent(analytics, 'chat_submit')
-
+        if (getAllChatflowsApi.data.length > 1 && !isPremium) {
+            dispatch(toggleCheckoutModal(true)) // This will set the modal to open
+            logEvent(analytics, 'show_checkout_modal')
+            return
+        }
         if (userInput.trim() === '') {
             return
         }
