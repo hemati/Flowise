@@ -19,14 +19,33 @@ import { SET_MENU, setAuthenticated, toggleCheckoutModal } from './store/actions
 import { useNavigate } from 'react-router-dom'
 import 'intro.js/introjs.css'
 import { Steps } from 'intro.js-react'
-import $ from 'jquery'
+// import $ from 'jquery'
 import useTour from './hooks/useTour'
 import CheckoutModal from './views/checkout'
 
 import { fetchPremiumStatus } from 'firebaseFunctions/functions'
 
 function findClosestDivWithClassByText(text, className) {
-    return $(`p:contains("${text}")`).closest(`div.${className}`)[0]
+    // return $(`p:contains("${text}")`).closest(`div.${className}`)[0]
+    // Find all <p> elements
+    let pElements = document.querySelectorAll('p')
+
+    // Filter elements that contain the specified text
+    let filteredElements = Array.from(pElements).filter((p) => p.textContent.includes(text))
+
+    // For each filtered <p> element, traverse up the DOM to find the closest div with the given class name
+    for (let p of filteredElements) {
+        let parentNode = p.parentElement
+
+        while (parentNode) {
+            if (parentNode.tagName === 'DIV' && parentNode.classList.contains(className)) {
+                return parentNode // Return the first matching div found
+            }
+            parentNode = parentNode.parentElement
+        }
+    }
+
+    return null // Return null if no matching div is found
 }
 // ==============================|| APP ||============================== //
 
