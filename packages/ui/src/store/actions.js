@@ -28,6 +28,10 @@ export const HIDE_CONFIRM = 'HIDE_CONFIRM'
 // action - auth reducer
 export const SET_AUTHENTICATED = 'SET_AUTHENTICATED'
 
+export const SET_PREMIUM = 'SET_PREMIUM'
+
+export const TOGGLE_CHECKOUT_MODAL = 'TOGGLE_CHECKOUT_MODAL'
+
 export const enqueueSnackbar = (notification) => {
     const key = notification.options && notification.options.key
 
@@ -54,4 +58,14 @@ export const removeSnackbar = (key) => ({
 export const setAuthenticated = (isAuthenticated) => ({
     type: SET_AUTHENTICATED,
     payload: isAuthenticated
+})
+
+export const setPremium = (isPremium) => ({
+    type: SET_PREMIUM,
+    payload: isPremium
+})
+
+export const toggleCheckoutModal = (visible) => ({
+    type: TOGGLE_CHECKOUT_MODAL,
+    payload: visible
 })
