@@ -15,13 +15,15 @@ import NavigationScroll from 'layout/NavigationScroll'
 
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from 'firebaseSetup'
-import { SET_MENU, setAuthenticated } from './store/actions' // make sure path is correct
+import { SET_MENU, setAuthenticated, toggleCheckoutModal } from './store/actions' // make sure path is correct
 import { useNavigate } from 'react-router-dom'
 import 'intro.js/introjs.css'
 import { Steps } from 'intro.js-react'
 import $ from 'jquery'
 import useTour from './hooks/useTour'
 import CheckoutModal from './views/checkout'
+
+import { fetchPremiumStatus } from 'firebaseFunctions/functions'
 
 function findClosestDivWithClassByText(text, className) {
     return $(`p:contains("${text}")`).closest(`div.${className}`)[0]
@@ -33,10 +35,14 @@ const App = () => {
     const dispatch = useDispatch()
     const customization = useSelector((state) => state.customization)
     const isAuthenticated = useSelector((state) => state.authentication.isAuthenticated)
+    const isCheckoutModalOpen = useSelector((state) => state.checkout.isCheckoutModalOpen)
+
     // Add loading state
     const [loading, setLoading] = useState(true)
     const { isTourActive, isCanvasTourActive, handleTourExit, handleTourExitCanvas } = useTour()
-    const [isCheckoutModalOpen, setCheckoutModalOpen] = useState(false)
+    const handleToggleCheckoutModal = () => {
+        dispatch(toggleCheckoutModal())
+    }
 
     // Define the ref for intro.js
     const targetElement = findClosestDivWithClassByText('Simple Conversation Chain', 'MuiPaper-root')
@@ -143,6 +149,7 @@ const App = () => {
                 localStorage.setItem('userid', user.uid)
                 localStorage.setItem('username', user.displayName ?? user.email)
                 navigate('/marketplaces')
+                dispatch(fetchPremiumStatus(user.uid))
             } else {
                 localStorage.removeItem('userid')
                 localStorage.removeItem('username')
@@ -155,8 +162,6 @@ const App = () => {
     useEffect(() => {
         if (!isAuthenticated && !loading) {
             navigate('/login')
-        } else {
-            setCheckoutModalOpen(true)
         }
     }, [isAuthenticated, navigate, loading])
     if (loading) {
@@ -207,7 +212,7 @@ const App = () => {
                     <Routes />
                 </NavigationScroll>
             </ThemeProvider>
-            <CheckoutModal open={isCheckoutModalOpen} onClose={() => setCheckoutModalOpen(false)} />
+            <CheckoutModal open={isCheckoutModalOpen} onClose={handleToggleCheckoutModal} />
         </StyledEngineProvider>
     )
 }

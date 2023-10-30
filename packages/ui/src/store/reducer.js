@@ -6,6 +6,8 @@ import canvasReducer from './reducers/canvasReducer'
 import notifierReducer from './reducers/notifierReducer'
 import dialogReducer from './reducers/dialogReducer'
 import authenticationReducer from './reducers/authenticationReducer'
+import premiumReducer from './reducers/premiumReducer'
+import checkoutReducer from './reducers/checkoutReducer'
 
 // ==============================|| COMBINE REDUCER ||============================== //
 
@@ -14,7 +16,9 @@ const reducer = combineReducers({
     canvas: canvasReducer,
     notifier: notifierReducer,
     dialog: dialogReducer,
-    authentication: authenticationReducer
+    authentication: authenticationReducer,
+    checkout: checkoutReducer,
+    premium: premiumReducer
 })
 
 export default reducer

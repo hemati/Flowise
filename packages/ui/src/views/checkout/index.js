@@ -12,8 +12,9 @@ import CheckCircle from '@mui/icons-material/CheckCircle'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import { collection, addDoc, onSnapshot } from 'firebase/firestore'
-import { auth, firestore } from '../../firebaseSetup'
+import { analytics, auth, firestore } from '../../firebaseSetup'
 import PropTypes from 'prop-types'
+import { logEvent } from 'firebase/analytics'
 
 const CheckoutModal = ({ open, onClose }) => {
     const [loading, setLoading] = useState(false)
@@ -27,6 +28,7 @@ const CheckoutModal = ({ open, onClose }) => {
             console.error('User is not authenticated!')
             return
         }
+        logEvent(analytics, 'checkout_clicked')
 
         try {
             // Reference to the Firestore collection
@@ -34,7 +36,7 @@ const CheckoutModal = ({ open, onClose }) => {
 
             // Add a new checkout session document (it will auto-generate an ID like .add() did)
             const docRef = await addDoc(checkoutSessionsCollection, {
-                price: 'price_1O4p6yGil3O4bErYNDfoLPb5',
+                price: 'price_1O4pELGil3O4bErY1SdY2sOx',
                 success_url: window.location.origin + '/success',
                 cancel_url: window.location.origin + '/cancel'
             })
@@ -51,6 +53,7 @@ const CheckoutModal = ({ open, onClose }) => {
                 if (data && data.url) {
                     window.location.assign(data.url)
                 }
+                logEvent(analytics, 'purchase')
             })
         } catch (error) {
             // Handle any errors that might occur during the Firestore operation
