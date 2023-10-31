@@ -16,12 +16,13 @@ import NavigationScroll from 'layout/NavigationScroll'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from 'firebaseSetup'
 import { SET_MENU, setAuthenticated, toggleCheckoutModal } from './store/actions' // make sure path is correct
+
 import { useNavigate } from 'react-router-dom'
 import 'intro.js/introjs.css'
 import { Steps } from 'intro.js-react'
-// import $ from 'jquery'
 import useTour from './hooks/useTour'
 import CheckoutModal from './views/checkout'
+import LoginForm from './views/loginform'
 
 import { fetchPremiumStatus } from 'firebaseFunctions/functions'
 
@@ -178,14 +179,20 @@ const App = () => {
 
         return () => unsubscribe()
     }, [dispatch])
-    useEffect(() => {
-        if (!isAuthenticated && !loading) {
-            navigate('/login')
-        }
-    }, [isAuthenticated, navigate, loading])
+    // useEffect(() => {
+    //     if (!isAuthenticated && !loading) {
+    //         navigate('/login')
+    //     }
+    // }, [isAuthenticated, navigate, loading])
     if (loading) {
         // Replace with a proper loading spinner or placeholder
         return <div>Loading...</div>
+    }
+
+    if (!isAuthenticated) {
+        document.body.style.margin = '0'
+        // If not authenticated, just render the login form
+        return <LoginForm />
     }
 
     return (

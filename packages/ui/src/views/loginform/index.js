@@ -16,8 +16,8 @@ import GitHubIcon from '@mui/icons-material/GitHub'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import { useTheme } from '@mui/material/styles'
 import { StyledButton } from 'ui-component/button/StyledButton'
-import MainCard from 'ui-component/cards/MainCard'
 import { useSelector } from 'react-redux'
+import SimpleHub from '../simplehub'
 
 function LoginForm() {
     const theme = useTheme()
@@ -88,63 +88,62 @@ function LoginForm() {
     }
 
     return (
-        <MainCard sx={{ background: customization.isDarkMode ? theme.palette.common.black : '' }}>
-            <Typography variant='h4' align='center'>
-                Log In / Register
-            </Typography>
-            <form onSubmit={handleSubmission}>
-                <TextField fullWidth margin='normal' label='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
-                <TextField
-                    fullWidth
-                    margin='normal'
-                    label='Password'
-                    type='password'
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+        <div style={{ display: 'flex', height: '100vh', margin: 0 }}>
+            <div style={{ flex: '1', padding: '20px' }}>
+                <Typography variant='h4' align='center'>
+                    Log In / Register
+                </Typography>
+                <form onSubmit={handleSubmission}>
+                    <TextField fullWidth margin='normal' label='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <TextField
+                        fullWidth
+                        margin='normal'
+                        label='Password'
+                        type='password'
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <Grid container justifyContent='center' spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <StyledButton style={{ width: '100%', padding: '10px', marginTop: '20px', cursor: 'pointer' }}>
+                                Log In / Register
+                            </StyledButton>
+                        </Grid>
+                    </Grid>
+                    {error && <p>{error}</p>}
+                </form>
+                <Divider sx={{ my: 2 }}>Or</Divider>
                 <Grid container justifyContent='center' spacing={2}>
-                    <Grid item xs={12} sm={3}>
-                        <StyledButton variant='contained' sx={{ color: 'white', width: '100%' }} type='submit'>
-                            Log In / Register
+                    <Grid item xs={12} sm={4}>
+                        <StyledButton
+                            style={{ backgroundColor: '#db4437', color: 'white', padding: '10px', width: '100%', cursor: 'pointer' }}
+                            onClick={() => handleOAuthSignIn(googleProvider)}
+                        >
+                            <GoogleIcon /> Sign in with Google
+                        </StyledButton>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <StyledButton
+                            style={{ backgroundColor: '#24292e', color: 'white', padding: '10px', width: '100%', cursor: 'pointer' }}
+                            onClick={() => handleOAuthSignIn(githubProvider)}
+                        >
+                            <GitHubIcon /> Sign in with GitHub
+                        </StyledButton>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <StyledButton
+                            style={{ backgroundColor: '#1DA1F2', color: 'white', padding: '10px', width: '100%', cursor: 'pointer' }}
+                            onClick={() => handleOAuthSignIn(twitterProvider)}
+                        >
+                            <TwitterIcon /> Sign in with Twitter
                         </StyledButton>
                     </Grid>
                 </Grid>
-                {error && <p>{error}</p>}
-            </form>
-            <Divider sx={{ my: 2 }}>Or</Divider>
-            <Grid container justifyContent='center' spacing={2}>
-                <Grid item xs={12} sm={3}>
-                    <StyledButton
-                        variant='contained'
-                        sx={{ color: 'white', backgroundColor: '#db4437', width: '100%' }}
-                        startIcon={<GoogleIcon />}
-                        onClick={() => handleOAuthSignIn(googleProvider)}
-                    >
-                        Sign in with Google
-                    </StyledButton>
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                    <StyledButton
-                        variant='contained'
-                        sx={{ color: 'white', backgroundColor: '#24292e', width: '100%' }}
-                        startIcon={<GitHubIcon />}
-                        onClick={() => handleOAuthSignIn(githubProvider)}
-                    >
-                        Sign in with GitHub
-                    </StyledButton>
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                    <StyledButton
-                        variant='contained'
-                        sx={{ color: 'white', backgroundColor: '#1DA1F2', width: '100%' }} // Twitter color
-                        startIcon={<TwitterIcon />}
-                        onClick={() => handleOAuthSignIn(twitterProvider)}
-                    >
-                        Sign in with Twitter
-                    </StyledButton>
-                </Grid>
-            </Grid>
-        </MainCard>
+            </div>
+            <div style={{ flex: '1', background: 'black' }}>
+                <SimpleHub />
+            </div>
+        </div>
     )
 }
 
