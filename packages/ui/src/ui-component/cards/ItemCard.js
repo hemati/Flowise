@@ -3,37 +3,42 @@ import PropTypes from 'prop-types'
 // material-ui
 import { styled } from '@mui/material/styles'
 import { Box, Grid, Typography } from '@mui/material'
+import { shouldForwardProp } from '@mui/system'
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard'
 import SkeletonChatflowCard from 'ui-component/cards/Skeleton/ChatflowCard'
 
-const CardWrapper = styled(MainCard)(({ theme }) => ({
+const CardWrapper = styled(MainCard, {
+    shouldForwardProp: (prop) => shouldForwardProp(prop) && prop !== 'showPointer'
+})(({ theme, showPointer }) => ({
     background: theme.palette.card.main,
     color: theme.darkTextPrimary,
     overflow: 'auto',
     position: 'relative',
     boxShadow: '0 2px 14px 0 rgb(32 40 45 / 8%)',
-    cursor: 'pointer',
-    '&:hover': {
-        background: theme.palette.card.hover,
-        boxShadow: '0 2px 14px 0 rgb(32 40 45 / 20%)'
-    },
+    cursor: showPointer ? 'pointer' : 'default',
+    '&:hover': showPointer
+        ? {
+              background: theme.palette.card.hover,
+              boxShadow: '0 2px 14px 0 rgb(32 40 45 / 20%)'
+          }
+        : {},
     maxHeight: '300px',
-    maxWidth: '300px',
     overflowWrap: 'break-word',
-    whiteSpace: 'pre-line'
+    whiteSpace: 'pre-line',
+    minHeight: '220px'
 }))
 
 // ===========================|| CONTRACT CARD ||=========================== //
 
-const ItemCard = ({ isLoading, data, images, onClick }) => {
+const ItemCard = ({ isLoading, data, images, onClick, showPointer = true }) => {
     return (
         <>
             {isLoading ? (
                 <SkeletonChatflowCard />
             ) : (
-                <CardWrapper border={false} content={false} onClick={onClick}>
+                <CardWrapper border={false} content={false} onClick={onClick} showPointer={showPointer}>
                     <Box sx={{ p: 2.25 }}>
                         <Grid container direction='column'>
                             <div
@@ -121,7 +126,8 @@ ItemCard.propTypes = {
     isLoading: PropTypes.bool,
     data: PropTypes.object,
     images: PropTypes.array,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    showPointer: PropTypes.bool
 }
 
 export default ItemCard

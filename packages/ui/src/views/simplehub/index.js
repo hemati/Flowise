@@ -62,8 +62,8 @@ const SimpleHub = () => {
             {!isChatflowsLoading &&
                 getAllChatflowsMarketplacesApi.data &&
                 getAllChatflowsMarketplacesApi.data.map((data, index) => (
-                    <Grid key={index} item lg={3} md={6} sm={6} xs={18}>
-                        <ItemCard data={data} onClick={() => console.log('clicked')} images={images[data.id]} />
+                    <Grid key={index} item lg={4} md={6} sm={6} xs={12}>
+                        <ItemCard showPointer={false} data={data} onClick={() => console.log('clicked')} images={images[data.id]} />
                     </Grid>
                 ))}
         </Grid>
