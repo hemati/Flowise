@@ -14,15 +14,63 @@ import { TextField, Typography, Grid, Divider } from '@mui/material'
 import GoogleIcon from '@mui/icons-material/Google'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import TwitterIcon from '@mui/icons-material/Twitter'
+import Box from '@mui/material/Box'
+import useMediaQuery from '@mui/material/useMediaQuery'
+
 import { useTheme } from '@mui/material/styles'
 import { StyledButton } from 'ui-component/button/StyledButton'
-import { useSelector } from 'react-redux'
 import SimpleHub from '../simplehub'
+import logoPath from '../../assets/images/logo.png'
+
+const styles = {
+    buttonBase: {
+        width: '100%',
+        padding: '10px',
+        marginTop: 16,
+        cursor: 'pointer',
+        maxWidth: '308px',
+        backgroundColor: '#374151',
+        color: 'white'
+    },
+    dividerContainer: {
+        paddingTop: 24,
+        paddingBottom: 16,
+        maxWidth: '324px'
+    },
+    mainContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        margin: 0,
+        overflowY: 'auto'
+    },
+    sideContainer: {
+        flex: '2',
+        backgroundColor: '#EEEEEE',
+        padding: 8,
+        overflowY: 'auto'
+    }
+}
 
 function LoginForm() {
     const theme = useTheme()
-    const customization = useSelector((state) => state.customization)
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
 
+    const formContainerStyles = {
+        flex: '1',
+        padding: 48,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#13192b',
+        ...(!isSmallScreen
+            ? {
+                  top: 0,
+                  position: 'sticky',
+                  height: '100vh'
+              }
+            : {})
+    }
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState(null)
@@ -88,12 +136,37 @@ function LoginForm() {
     }
 
     return (
-        <div style={{ display: 'flex', height: '100vh', margin: 0 }}>
-            <div style={{ flex: '1', padding: '20px' }}>
-                <Typography variant='h4' align='center'>
-                    Log In / Register
-                </Typography>
-                <form onSubmit={handleSubmission}>
+        <Box display='flex' flexDirection={{ xs: 'column', md: 'row' }} margin={0} overflowY='auto'>
+            <div style={formContainerStyles}>
+                <div style={{ width: 308 }}>
+                    <img src={logoPath} alt='LangFlux.Space' style={{ width: 48, height: 48 }} />
+                    <Typography variant='h4' align='left' style={{ color: '#eaf2f7' }}>
+                        Sign in /<br /> Sign up for free
+                    </Typography>
+                </div>
+                <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(googleProvider)}>
+                    <GoogleIcon style={{ marginRight: 8, color: '#db4437' }} /> Sign in with Google
+                </StyledButton>
+                <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(githubProvider)}>
+                    <GitHubIcon style={{ marginRight: 8, color: 'white' }} /> Sign in with GitHub
+                </StyledButton>
+                <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(twitterProvider)}>
+                    <TwitterIcon style={{ marginRight: 8, color: '#1DA1F2' }} /> Sign in with Twitter
+                </StyledButton>
+                <Grid container alignItems='center' spacing={3} style={styles.dividerContainer}>
+                    <Grid item xs>
+                        <Divider />
+                    </Grid>
+                    <Grid item>
+                        <Typography variant='caption' component='span' color='textSecondary'>
+                            Or
+                        </Typography>
+                    </Grid>
+                    <Grid item xs>
+                        <Divider />
+                    </Grid>
+                </Grid>
+                <form onSubmit={handleSubmission} style={{ width: '100%', maxWidth: '308px' }}>
                     <TextField fullWidth margin='normal' label='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
                     <TextField
                         fullWidth
@@ -103,47 +176,14 @@ function LoginForm() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <Grid container justifyContent='center' spacing={2}>
-                        <Grid item xs={12} sm={6}>
-                            <StyledButton style={{ width: '100%', padding: '10px', marginTop: '20px', cursor: 'pointer' }}>
-                                Log In / Register
-                            </StyledButton>
-                        </Grid>
-                    </Grid>
+                    <StyledButton style={{ ...styles.buttonBase }}>Continue with Email</StyledButton>
                     {error && <p>{error}</p>}
                 </form>
-                <Divider sx={{ my: 2 }}>Or</Divider>
-                <Grid container justifyContent='center' spacing={2}>
-                    <Grid item xs={12} sm={4}>
-                        <StyledButton
-                            style={{ backgroundColor: '#db4437', color: 'white', padding: '10px', width: '100%', cursor: 'pointer' }}
-                            onClick={() => handleOAuthSignIn(googleProvider)}
-                        >
-                            <GoogleIcon /> Sign in with Google
-                        </StyledButton>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <StyledButton
-                            style={{ backgroundColor: '#24292e', color: 'white', padding: '10px', width: '100%', cursor: 'pointer' }}
-                            onClick={() => handleOAuthSignIn(githubProvider)}
-                        >
-                            <GitHubIcon /> Sign in with GitHub
-                        </StyledButton>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <StyledButton
-                            style={{ backgroundColor: '#1DA1F2', color: 'white', padding: '10px', width: '100%', cursor: 'pointer' }}
-                            onClick={() => handleOAuthSignIn(twitterProvider)}
-                        >
-                            <TwitterIcon /> Sign in with Twitter
-                        </StyledButton>
-                    </Grid>
-                </Grid>
             </div>
-            <div style={{ flex: '1', background: 'black' }}>
+            <div style={styles.sideContainer}>
                 <SimpleHub />
             </div>
-        </div>
+        </Box>
     )
 }
 

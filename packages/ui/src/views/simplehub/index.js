@@ -5,7 +5,7 @@ import { Grid } from '@mui/material'
 
 // project imports
 import ItemCard from 'ui-component/cards/ItemCard'
-import { gridSpacing } from 'store/constant'
+import { gridSpacing, baseURL } from 'store/constant'
 
 // API
 import marketplacesApi from 'api/marketplaces'
@@ -62,8 +62,8 @@ const SimpleHub = () => {
             {!isChatflowsLoading &&
                 getAllChatflowsMarketplacesApi.data &&
                 getAllChatflowsMarketplacesApi.data.map((data, index) => (
-                    <Grid key={index} item lg={3} md={4} sm={6} xs={12}>
-                        <ItemCard data={data} images={images[data.id]} />
+                    <Grid key={index} item lg={3} md={6} sm={6} xs={18}>
+                        <ItemCard data={data} onClick={() => console.log('clicked')} images={images[data.id]} />
                     </Grid>
                 ))}
         </Grid>
