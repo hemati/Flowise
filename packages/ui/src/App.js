@@ -179,64 +179,61 @@ const App = () => {
 
         return () => unsubscribe()
     }, [dispatch])
-    // useEffect(() => {
-    //     if (!isAuthenticated && !loading) {
-    //         navigate('/login')
-    //     }
-    // }, [isAuthenticated, navigate, loading])
     if (loading) {
         // Replace with a proper loading spinner or placeholder
         return <div>Loading...</div>
-    }
-
-    if (!isAuthenticated) {
-        document.body.style.margin = '0'
-        // If not authenticated, just render the login form
-        return <LoginForm />
     }
 
     return (
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={themes(customization)}>
                 <CssBaseline />
-                <Steps
-                    enabled={isTourActive}
-                    steps={introSteps}
-                    initialStep={0}
-                    onComplete={handleTourExit}
-                    options={{
-                        hideNext: false,
-                        exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
-                        exitOnEsc: false, // Prevents closing the tour using the Esc key
-                        showSkip: false, // Hides the "Skip" button
-                        disableInteraction: true,
-                        skipLabel: ''
-                    }}
-                    onExit={() => console.log('exit')}
-                    onChange={(step) => {
-                        if (step === introSteps.length - 1 && window.innerWidth <= 900) {
-                            dispatch({ type: SET_MENU, opened: false })
-                        }
-                    }}
-                />
-                <Steps
-                    enabled={isCanvasTourActive}
-                    steps={introCanvasSteps}
-                    initialStep={0}
-                    onComplete={handleTourExitCanvas}
-                    options={{
-                        hideNext: false,
-                        exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
-                        exitOnEsc: false, // Prevents closing the tour using the Esc key
-                        showSkip: false, // Hides the "Skip" button
-                        disableInteraction: true,
-                        skipLabel: ''
-                    }}
-                    onExit={() => console.log('exit canvas')}
-                />
-                <NavigationScroll>
-                    <Routes />
-                </NavigationScroll>
+                {!isAuthenticated ? (
+                    <>
+                        <LoginForm />
+                    </>
+                ) : (
+                    <>
+                        <Steps
+                            enabled={isTourActive}
+                            steps={introSteps}
+                            initialStep={0}
+                            onComplete={handleTourExit}
+                            options={{
+                                hideNext: false,
+                                exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
+                                exitOnEsc: false, // Prevents closing the tour using the Esc key
+                                showSkip: false, // Hides the "Skip" button
+                                disableInteraction: true,
+                                skipLabel: ''
+                            }}
+                            onExit={() => console.log('exit')}
+                            onChange={(step) => {
+                                if (step === introSteps.length - 1 && window.innerWidth <= 900) {
+                                    dispatch({ type: SET_MENU, opened: false })
+                                }
+                            }}
+                        />
+                        <Steps
+                            enabled={isCanvasTourActive}
+                            steps={introCanvasSteps}
+                            initialStep={0}
+                            onComplete={handleTourExitCanvas}
+                            options={{
+                                hideNext: false,
+                                exitOnOverlayClick: false, // Prevents closing the tour by clicking on the overlay
+                                exitOnEsc: false, // Prevents closing the tour using the Esc key
+                                showSkip: false, // Hides the "Skip" button
+                                disableInteraction: true,
+                                skipLabel: ''
+                            }}
+                            onExit={() => console.log('exit canvas')}
+                        />
+                        <NavigationScroll>
+                            <Routes />
+                        </NavigationScroll>
+                    </>
+                )}
             </ThemeProvider>
             <CheckoutModal open={isCheckoutModalOpen} onClose={handleToggleCheckoutModal} />
         </StyledEngineProvider>
