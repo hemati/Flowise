@@ -35,19 +35,18 @@ const styles = {
     dividerContainer: {
         paddingTop: 24,
         paddingBottom: 16,
-        maxWidth: '324px'
+        maxWidth: '324px',
+        color: '#eaf2f7'
     },
     mainContainer: {
         display: 'flex',
         flexDirection: 'row',
-        margin: 0,
-        overflowY: 'auto'
+        margin: 0
     },
     sideContainer: {
         flex: '2',
         backgroundColor: '#EEEEEE',
-        padding: 8,
-        overflowY: 'auto'
+        padding: 24
     }
 }
 
@@ -57,7 +56,7 @@ function LoginForm() {
 
     const formContainerStyles = {
         flex: '1',
-        padding: 48,
+        padding: 24,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -136,22 +135,22 @@ function LoginForm() {
     }
 
     return (
-        <Box display='flex' flexDirection={{ xs: 'column', md: 'row' }} margin={0} overflowY='auto'>
+        <Box display='flex' flexDirection={{ xs: 'column', md: 'row' }} margin={0}>
             <div style={formContainerStyles}>
                 <div style={{ width: 308 }}>
                     <img src={logoPath} alt='LangFlux.Space' style={{ width: 48, height: 48 }} />
-                    <Typography variant='h4' align='left' style={{ color: '#eaf2f7' }}>
-                        Sign in /<br /> Sign up for free
+                    <Typography variant='body1' align='left' style={{ color: '#eaf2f7' }}>
+                        Sign in /<br /> Sign up for <span style={{ fontWeight: 'bold' }}>free</span>
                     </Typography>
                 </div>
                 <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(googleProvider)}>
-                    <GoogleIcon style={{ marginRight: 8, color: '#db4437' }} /> Sign in with Google
+                    <GoogleIcon style={{ marginRight: 8, color: '#db4437' }} /> with Google
                 </StyledButton>
                 <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(githubProvider)}>
-                    <GitHubIcon style={{ marginRight: 8, color: 'white' }} /> Sign in with GitHub
+                    <GitHubIcon style={{ marginRight: 8, color: 'white' }} /> with GitHub
                 </StyledButton>
                 <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(twitterProvider)}>
-                    <TwitterIcon style={{ marginRight: 8, color: '#1DA1F2' }} /> Sign in with Twitter
+                    <TwitterIcon style={{ marginRight: 8, color: '#1DA1F2' }} /> with Twitter
                 </StyledButton>
                 <Grid container alignItems='center' spacing={3} style={styles.dividerContainer}>
                     <Grid item xs>
@@ -176,11 +175,22 @@ function LoginForm() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <StyledButton style={{ ...styles.buttonBase }}>Continue with Email</StyledButton>
+                    <StyledButton style={{ ...styles.buttonBase }} type='submit'>
+                        Continue with Email
+                    </StyledButton>
                     {error && <p>{error}</p>}
                 </form>
             </div>
             <div style={styles.sideContainer}>
+                <div style={{ marginBottom: 24 }}>
+                    <Typography variant='h2' gutterBottom>
+                        Hub
+                    </Typography>
+                    <Typography variant='body1' color='textSecondary'>
+                        Explore our handpicked examples or create your own tailor-made solution. Begin your journey today, and start for
+                        free! See the examples below. Register to get started!
+                    </Typography>
+                </div>
                 <SimpleHub />
             </div>
         </Box>
