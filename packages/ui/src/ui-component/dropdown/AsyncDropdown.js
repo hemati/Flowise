@@ -30,12 +30,12 @@ const fetchList = async ({ name, nodeData }) => {
     const loadMethod = nodeData.inputParams.find((param) => param.name === name)?.loadMethod
     const username = localStorage.getItem('username')
     const password = localStorage.getItem('password')
-
+    const userid = localStorage.getItem('userid')
     let lists = await axios
         .post(
             `${baseURL}/api/v1/node-load-method/${nodeData.name}`,
             { ...nodeData, loadMethod },
-            { auth: username && password ? { username, password } : undefined }
+            { auth: username && password ? { username, password } : undefined, headers: { userid } }
         )
         .then(async function (response) {
             return response.data
