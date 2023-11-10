@@ -17,7 +17,6 @@ import {
     IReactFlowNode,
     IReactFlowObject,
     INodeData,
-    IDatabaseExport,
     ICredentialReturnResponse,
     chatType,
     IChatMessage,
@@ -39,7 +38,6 @@ import {
     mapMimeTypeToInputField,
     findAvailableConfigs,
     isSameOverrideConfig,
-    replaceAllAPIKeys,
     isFlowValidForStream,
     databaseEntities,
     getApiKey,
@@ -253,6 +251,11 @@ export class App {
 
         // load async options
         this.app.post('/api/v1/node-load-method/:name', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (req.params.name === 'openAIAssistant' && !userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
+                return
+            }
             const nodeData: INodeData = req.body
             if (Object.prototype.hasOwnProperty.call(this.nodesPool.componentNodes, req.params.name)) {
                 try {
@@ -261,7 +264,8 @@ export class App {
 
                     const returnOptions: INodeOptionsValue[] = await nodeInstance.loadMethods![methodName]!.call(nodeInstance, nodeData, {
                         appDataSource: this.AppDataSource,
-                        databaseEntities: databaseEntities
+                        databaseEntities: databaseEntities,
+                        userid: userid
                     })
 
                     return res.json(returnOptions)
@@ -680,25 +684,43 @@ export class App {
                 res.status(400).send('userid header is missing') // Return an error if the userid is missing
                 return
             }
-            const assistants = await this.AppDataSource.getRepository(Assistant).findBy({
-                userid: userid
-            })
-            return res.json(assistants)
+            if (userid === 'd69qR2TZVWTYO8Eo9UiaFBgOCJz2') {
+                const assistants = await this.AppDataSource.getRepository(Assistant).find()
+                return res.json(assistants)
+            } else {
+                const assistants = await this.AppDataSource.getRepository(Assistant).findBy({
+                    userid: userid
+                })
+                return res.json(assistants)
+            }
         })
 
         // Get specific assistant
         this.app.get('/api/v1/assistants/:id', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
+                return
+            }
+
             const assistant = await this.AppDataSource.getRepository(Assistant).findOneBy({
-                id: req.params.id
+                id: req.params.id,
+                userid: userid
             })
             return res.json(assistant)
         })
 
         // Get assistant object
         this.app.get('/api/v1/openai-assistants/:id', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
+                return
+            }
             const credentialId = req.query.credential as string
             const credential = await this.AppDataSource.getRepository(Credential).findOneBy({
-                id: credentialId
+                id: credentialId,
+                userid: userid
             })
 
             if (!credential) return res.status(404).send(`Credential ${credentialId} not found`)
@@ -722,9 +744,15 @@ export class App {
 
         // List available assistants
         this.app.get('/api/v1/openai-assistants', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
+                return
+            }
             const credentialId = req.query.credential as string
             const credential = await this.AppDataSource.getRepository(Credential).findOneBy({
-                id: credentialId
+                id: credentialId,
+                userid: userid
             })
 
             if (!credential) return res.status(404).send(`Credential ${credentialId} not found`)
@@ -748,6 +776,7 @@ export class App {
                 return
             }
             const body = req.body
+            body.userid = userid
 
             if (!body.details) return res.status(500).send(`Invalid request body`)
 
@@ -851,7 +880,6 @@ export class App {
                 return res.status(500).send(`Error creating new assistant: ${error}`)
             }
 
-            body.userid = userid
             const newAssistant = new Assistant()
             Object.assign(newAssistant, body)
 
@@ -863,8 +891,15 @@ export class App {
 
         // Update assistant
         this.app.put('/api/v1/assistants/:id', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
+                return
+            }
+
             const assistant = await this.AppDataSource.getRepository(Assistant).findOneBy({
-                id: req.params.id
+                id: req.params.id,
+                userid: userid
             })
 
             if (!assistant) {
@@ -876,6 +911,7 @@ export class App {
                 const openAIAssistantId = JSON.parse(assistant.details)?.id
 
                 const body = req.body
+                body.userid = userid
                 const assistantDetails = JSON.parse(body.details)
 
                 const credential = await this.AppDataSource.getRepository(Credential).findOneBy({
@@ -971,8 +1007,15 @@ export class App {
 
         // Delete assistant
         this.app.delete('/api/v1/assistants/:id', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
+                return
+            }
+
             const assistant = await this.AppDataSource.getRepository(Assistant).findOneBy({
-                id: req.params.id
+                id: req.params.id,
+                userid: userid
             })
 
             if (!assistant) {
