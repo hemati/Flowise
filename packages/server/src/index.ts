@@ -675,7 +675,14 @@ export class App {
 
         // Get all assistants
         this.app.get('/api/v1/assistants', async (req: Request, res: Response) => {
-            const assistants = await this.AppDataSource.getRepository(Assistant).find()
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
+                return
+            }
+            const assistants = await this.AppDataSource.getRepository(Assistant).findBy({
+                userid: userid
+            })
             return res.json(assistants)
         })
 
@@ -735,6 +742,11 @@ export class App {
 
         // Add assistant
         this.app.post('/api/v1/assistants', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            if (!userid) {
+                res.status(400).send('userid header is missing') // Return an error if the userid is missing
+                return
+            }
             const body = req.body
 
             if (!body.details) return res.status(500).send(`Invalid request body`)
@@ -839,6 +851,7 @@ export class App {
                 return res.status(500).send(`Error creating new assistant: ${error}`)
             }
 
+            body.userid = userid
             const newAssistant = new Assistant()
             Object.assign(newAssistant, body)
 

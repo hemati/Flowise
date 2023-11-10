@@ -53,6 +53,7 @@ export interface ITool {
 
 export interface IAssistant {
     id: string
+    userid: string
     details: string
     credential: string
     iconSrc?: string
