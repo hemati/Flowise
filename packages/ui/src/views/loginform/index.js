@@ -8,12 +8,14 @@ import {
     signInWithPopup,
     GoogleAuthProvider,
     GithubAuthProvider,
-    TwitterAuthProvider
+    TwitterAuthProvider,
+    FacebookAuthProvider
 } from 'firebase/auth'
 import { TextField, Typography, Grid, Divider } from '@mui/material'
 import GoogleIcon from '@mui/icons-material/Google'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import TwitterIcon from '@mui/icons-material/Twitter'
+import FacebookIcon from '@mui/icons-material/Facebook'
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
@@ -101,6 +103,7 @@ function LoginForm() {
     const googleProvider = new GoogleAuthProvider()
     const githubProvider = new GithubAuthProvider()
     const twitterProvider = new TwitterAuthProvider()
+    const facebookProvider = new FacebookAuthProvider()
 
     const handleSubmission = async (event) => {
         event.preventDefault()
@@ -145,6 +148,9 @@ function LoginForm() {
                 </div>
                 <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(googleProvider)}>
                     <GoogleIcon style={{ marginRight: 8, color: '#db4437' }} /> with Google
+                </StyledButton>
+                <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(facebookProvider)}>
+                    <FacebookIcon style={{ marginRight: 8, color: '#3b5998' }} /> with Facebook
                 </StyledButton>
                 <StyledButton style={{ ...styles.buttonBase }} onClick={() => handleOAuthSignIn(githubProvider)}>
                     <GitHubIcon style={{ marginRight: 8, color: 'white' }} /> with GitHub
