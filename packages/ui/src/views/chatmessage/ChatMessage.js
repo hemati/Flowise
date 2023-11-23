@@ -32,7 +32,7 @@ import { baseURL, maxScroll } from 'store/constant'
 
 import robotPNG from 'assets/images/robot.png'
 import userPNG from 'assets/images/account.png'
-import { isValidURL, removeDuplicateURL } from 'utils/genericHelper'
+import { isValidURL, removeDuplicateURL, setLocalStorageChatflow } from 'utils/genericHelper'
 
 import { analytics } from '../../firebaseSetup'
 import { logEvent } from 'firebase/analytics'
@@ -144,10 +144,9 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
 
             if (response.data) {
                 const data = response.data
-                if (!chatId) {
-                    setChatId(data.chatId)
-                    localStorage.setItem(`${chatflowid}_INTERNAL`, data.chatId)
-                }
+
+                if (!chatId) setChatId(data.chatId)
+
                 if (!isChatFlowAvailableToStream) {
                     let text = ''
                     if (data.text) text = data.text
@@ -165,7 +164,7 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
                         }
                     ])
                 }
-
+                setLocalStorageChatflow(chatflowid, data.chatId, messages)
                 setLoading(false)
                 setUserInput('')
                 setTimeout(() => {
@@ -218,7 +217,6 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
         if (getChatmessageApi.data?.length) {
             const chatId = getChatmessageApi.data[0]?.chatId
             setChatId(chatId)
-            localStorage.setItem(`${chatflowid}_INTERNAL`, chatId)
             const loadedMessages = getChatmessageApi.data.map((message) => {
                 const obj = {
                     message: message.content,
@@ -230,6 +228,7 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
                 return obj
             })
             setMessages((prevMessages) => [...prevMessages, ...loadedMessages])
+            setLocalStorageChatflow(chatflowid, chatId, messages)
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -395,7 +394,10 @@ export const ChatMessage = ({ open, chatflowid, isDialog }) => {
                                             {message.sourceDocuments && (
                                                 <div style={{ display: 'block', flexDirection: 'row', width: '100%' }}>
                                                     {removeDuplicateURL(message).map((source, index) => {
-                                                        const URL = isValidURL(source.metadata.source)
+                                                        const URL =
+                                                            source.metadata && source.metadata.source
+                                                                ? isValidURL(source.metadata.source)
+                                                                : undefined
                                                         return (
                                                             <Chip
                                                                 size='small'
