@@ -1171,13 +1171,13 @@ export class App {
             upload.array('files'),
             (req: Request, res: Response, next: NextFunction) => getRateLimiter(req, res, next),
             async (req: Request, res: Response) => {
-                await this.processPrediction(req, res, socketIO)
+                await this.buildChatflow(req, res, socketIO)
             }
         )
 
         // Send input message and get prediction result (Internal)
         this.app.post('/api/v1/internal-prediction/:id', async (req: Request, res: Response) => {
-            await this.processPrediction(req, res, socketIO, true)
+            await this.buildChatflow(req, res, socketIO, true)
         })
 
         // ----------------------------------------
