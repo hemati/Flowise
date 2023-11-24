@@ -165,7 +165,13 @@ const Marketplace = () => {
                                                         }
                                                     }}
                                                     badgeContent={data.badge}
-                                                    color={data.badge === 'POPULAR' ? 'primary' : 'error'}
+                                                    color={
+                                                        data.badge === 'POPULAR'
+                                                            ? 'primary'
+                                                            : data.badge === 'TUTORIAL'
+                                                            ? 'success'
+                                                            : 'error'
+                                                    }
                                                 >
                                                     <ItemCard onClick={() => goToCanvas(data)} data={data} images={images[data.id]} />
                                                 </Badge>
@@ -191,7 +197,13 @@ const Marketplace = () => {
                                                         }
                                                     }}
                                                     badgeContent={data.badge}
-                                                    color={data.badge === 'POPULAR' ? 'primary' : 'error'}
+                                                    color={
+                                                        data.badge === 'POPULAR'
+                                                            ? 'primary'
+                                                            : data.badge === 'TUTORIAL'
+                                                            ? 'success'
+                                                            : 'error'
+                                                    }
                                                 >
                                                     <ItemCard data={data} onClick={() => goToTool(data)} />
                                                 </Badge>
