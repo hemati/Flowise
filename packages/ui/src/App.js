@@ -65,9 +65,9 @@ const App = () => {
     }
 
     // Define the ref for intro.js
-    const targetElement = findClosestDivWithClassByText('Simple Conversation Chain', 'MuiPaper-root')
+    const targetElement = findClosestDivWithClassByText('Simple Llama Conversation Chain', 'MuiPaper-root')
     if (targetElement) {
-        targetElement.setAttribute('id', 'simpleConversationChainFlowItem')
+        targetElement.setAttribute('id', 'simpleLlamaConversationChainFlowItem')
     }
 
     // Define your steps here. This is just an example.
@@ -111,7 +111,7 @@ const App = () => {
         },
         {
             title: 'Begin Your Exploration Now!',
-            element: '#simpleConversationChainFlowItem',
+            element: '#simpleLlamaConversationChainFlowItem',
             intro:
                 'Kickstart your journey by utilizing a predefined Simple Conversation Chain from the Hub. This ' +
                 'hands-on start will guide you through key platform features, enriching your understanding swiftly.\n' +
