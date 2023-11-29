@@ -30,18 +30,11 @@ import {
     constructGraphs,
     resolveVariables,
     isStartNodeDependOnInput,
-    getAPIKeys,
-    addAPIKey,
-    updateAPIKey,
-    deleteAPIKey,
-    compareKeys,
     mapMimeTypeToInputField,
     findAvailableConfigs,
     isSameOverrideConfig,
-    replaceAllAPIKeys,
     isFlowValidForStream,
     databaseEntities,
-    getApiKey,
     transformToCredentialEntity,
     decryptCredentialData,
     clearAllSessionMemory,
@@ -63,6 +56,7 @@ import { ChatflowPool } from './ChatflowPool'
 import { CachePool } from './CachePool'
 import { ICommonObject, INodeOptionsValue } from 'flowise-components'
 import { createRateLimiter, getRateLimiter, initializeRateLimiter } from './utils/rateLimit'
+import { addAPIKey, compareKeys, deleteAPIKey, getApiKey, getAPIKeys, updateAPIKey } from './utils/apiKey'
 
 export class App {
     app: express.Application
@@ -134,6 +128,7 @@ export class App {
                 '/api/v1/chatflows/apikey/',
                 '/api/v1/public-chatflows',
                 '/api/v1/prediction/',
+                '/api/v1/vector/upsert/',
                 '/api/v1/node-icon/',
                 '/api/v1/components-credentials-icon/',
                 '/api/v1/chatflows-streaming',
@@ -343,7 +338,6 @@ export class App {
         // Save chatflow
         this.app.post('/api/v1/chatflows', async (req: Request, res: Response) => {
             const body = req.body
-            body['userid'] = req.headers.userid
             const newChatFlow = new ChatFlow()
             Object.assign(newChatFlow, body)
 
@@ -374,8 +368,12 @@ export class App {
             this.AppDataSource.getRepository(ChatFlow).merge(chatflow, updateChatFlow)
             const result = await this.AppDataSource.getRepository(ChatFlow).save(chatflow)
 
-            // Update chatflowpool inSync to false, to build Langchain again because data has been changed
-            this.chatflowPool.updateInSync(chatflow.id, false)
+            // chatFlowPool is initialized only when a flow is opened
+            // if the user attempts to rename/update category without opening any flow, chatFlowPool will be undefined
+            if (this.chatflowPool) {
+                // Update chatflowpool inSync to false, to build Langchain again because data has been changed
+                this.chatflowPool.updateInSync(chatflow.id, false)
+            }
 
             return res.json(result)
         })
@@ -1111,55 +1109,21 @@ export class App {
         })
 
         // ----------------------------------------
-        // Export Load Chatflow & ChatMessage & Apikeys
+        // Upsert
         // ----------------------------------------
 
-        // this.app.get('/api/v1/database/export', async (req: Request, res: Response) => {
-        //     const chatmessages = await this.AppDataSource.getRepository(ChatMessage).find()
-        //     const chatflows = await this.AppDataSource.getRepository(ChatFlow).find()
-        //     const apikeys = await getAPIKeys(undefined)
-        //     const result: IDatabaseExport = {
-        //         chatmessages,
-        //         chatflows,
-        //         apikeys
-        //     }
-        //     return res.json(result)
-        // })
-        //
-        // this.app.post('/api/v1/database/load', async (req: Request, res: Response) => {
-        //     const databaseItems: IDatabaseExport = req.body
-        //
-        //     await this.AppDataSource.getRepository(ChatFlow).delete({})
-        //     await this.AppDataSource.getRepository(ChatMessage).delete({})
-        //
-        //     let error = ''
-        //
-        //     // Get a new query runner instance
-        //     const queryRunner = this.AppDataSource.createQueryRunner()
-        //
-        //     // Start a new transaction
-        //     await queryRunner.startTransaction()
-        //
-        //     try {
-        //         const chatflows: ChatFlow[] = databaseItems.chatflows
-        //         const chatmessages: ChatMessage[] = databaseItems.chatmessages
-        //
-        //         await queryRunner.manager.insert(ChatFlow, chatflows)
-        //         await queryRunner.manager.insert(ChatMessage, chatmessages)
-        //
-        //         await queryRunner.commitTransaction()
-        //     } catch (err: any) {
-        //         error = err?.message ?? 'Error loading database'
-        //         await queryRunner.rollbackTransaction()
-        //     } finally {
-        //         await queryRunner.release()
-        //     }
-        //
-        //     await replaceAllAPIKeys(databaseItems.apikeys)
-        //
-        //     if (error) return res.status(500).send(error)
-        //     return res.status(201).send('OK')
-        // })
+        this.app.post(
+            '/api/v1/vector/upsert/:id',
+            upload.array('files'),
+            (req: Request, res: Response, next: NextFunction) => getRateLimiter(req, res, next),
+            async (req: Request, res: Response) => {
+                await this.buildChatflow(req, res, undefined, false, true)
+            }
+        )
+
+        this.app.post('/api/v1/vector/internal-upsert/:id', async (req: Request, res: Response) => {
+            await this.buildChatflow(req, res, undefined, true, true)
+        })
 
         // ----------------------------------------
         // Prediction
