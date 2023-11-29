@@ -338,6 +338,7 @@ export class App {
         // Save chatflow
         this.app.post('/api/v1/chatflows', async (req: Request, res: Response) => {
             const body = req.body
+            body['userid'] = req.headers.userid
             const newChatFlow = new ChatFlow()
             Object.assign(newChatFlow, body)
 
