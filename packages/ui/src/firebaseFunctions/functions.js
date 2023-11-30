@@ -14,7 +14,7 @@ export const fetchPremiumStatus = (userId) => {
             let userIsPremium = false
 
             querySnapshot.forEach((doc) => {
-                if (doc.data().status === 'active') {
+                if (doc.data().status === 'active' || doc.data().status === 'trialing') {
                     userIsPremium = true
                 }
             })
