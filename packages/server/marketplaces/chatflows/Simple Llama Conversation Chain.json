@@ -336,7 +336,7 @@
         ],
         "inputs": {
           "cache": "",
-          "baseUrl": "http://dashboard.langflux.space:11434",
+          "baseUrl": "https://llama.langflux.space",
           "modelName": "llama2",
           "temperature": 0.9,
           "topP": "",
