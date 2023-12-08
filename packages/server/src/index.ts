@@ -1616,6 +1616,7 @@ export class App {
 
             let result = isStreamValid
                 ? await nodeInstance.run(nodeToExecuteData, incomingInput.question, {
+                      chatflowid,
                       chatHistory,
                       socketIO,
                       socketIOClientId: incomingInput.socketIOClientId,
@@ -1626,6 +1627,7 @@ export class App {
                       chatId
                   })
                 : await nodeInstance.run(nodeToExecuteData, incomingInput.question, {
+                      chatflowid,
                       chatHistory,
                       logger,
                       appDataSource: this.AppDataSource,
