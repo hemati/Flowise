@@ -1295,13 +1295,18 @@ export class App {
         // Variables
         // ----------------------------------------
         this.app.get('/api/v1/variables', async (req: Request, res: Response) => {
-            const variables = await getDataSource().getRepository(Variable).find()
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
+            const variables = await getDataSource().getRepository(Variable).findBy({
+              userid: userid
+            })
             return res.json(variables)
         })
 
         // Create new variable
         this.app.post('/api/v1/variables', async (req: Request, res: Response) => {
+            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
             const body = req.body
+            body['userid'] = userid
             const newVariable = new Variable()
             Object.assign(newVariable, body)
             const variable = this.AppDataSource.getRepository(Variable).create(newVariable)

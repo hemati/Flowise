@@ -7,6 +7,9 @@ export class Variable implements IVariable{
     @PrimaryGeneratedColumn('uuid')
     id: string
 
+    @Column({ nullable: false, type: 'text'})
+    userid: string
+
     @Column()
     name: string
 

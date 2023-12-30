@@ -1,8 +1,11 @@
 // assets
-import { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconLock, IconRobot } from '@tabler/icons'
+import { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconLock, IconRobot, IconVariable } from '@tabler/icons'
+import { IconBrandDiscord, IconBrandYoutube, IconBook } from '@tabler/icons'
 
 // constant
-const icons = { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconLock, IconRobot }
+const icons = { IconHierarchy, IconBuildingStore, IconKey, IconTool, IconLock, IconRobot, IconVariable }
+
+const iconsCustom = { IconBrandDiscord, IconBrandYoutube, IconBook }
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
@@ -72,7 +75,7 @@ const dashboard = {
             title: 'Docs',
             type: 'item',
             url: 'https://docs.langflux.space',
-            icon: icons.IconBook,
+            icon: iconsCustom.IconBook,
             target: '_blank',
             external: true
         },
@@ -81,7 +84,16 @@ const dashboard = {
             title: 'Discord',
             type: 'item',
             url: 'https://discord.gg/PTb8rEGzGz',
-            icon: icons.IconBrandDiscord,
+            icon: iconsCustom.IconBrandDiscord,
+            target: '_blank',
+            external: true
+        },
+        {
+            id: 'youtube',
+            title: 'Youtube',
+            type: 'item',
+            url: 'https://www.youtube.com/@LangFlux/playlists',
+            icon: iconsCustom.IconBrandYoutube,
             target: '_blank',
             external: true
         }
