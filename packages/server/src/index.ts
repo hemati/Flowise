@@ -1297,7 +1297,7 @@ export class App {
         this.app.get('/api/v1/variables', async (req: Request, res: Response) => {
             const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
             const variables = await getDataSource().getRepository(Variable).findBy({
-              userid: userid
+                userid: userid
             })
             return res.json(variables)
         })
