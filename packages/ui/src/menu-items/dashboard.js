@@ -92,7 +92,7 @@ const dashboard = {
             id: 'youtube',
             title: 'Youtube',
             type: 'item',
-            url: 'https://www.youtube.com/@LangFlux/playlists',
+            url: 'https://www.youtube.com/@LangFluxSpace/playlists',
             icon: iconsCustom.IconBrandYoutube,
             target: '_blank',
             external: true
