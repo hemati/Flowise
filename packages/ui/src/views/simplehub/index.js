@@ -21,7 +21,7 @@ const SimpleHub = () => {
     const [isChatflowsLoading, setChatflowsLoading] = useState(true)
     const [images, setImages] = useState({})
 
-    const getAllChatflowsMarketplacesApi = useApi(marketplacesApi.getAllChatflowsMarketplaces)
+    const getAllChatflowsMarketplacesApi = useApi(marketplacesApi.getAllChatflowsMarketplacesNew)
 
     useEffect(() => {
         getAllChatflowsMarketplacesApi.request()
