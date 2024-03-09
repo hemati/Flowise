@@ -1,6 +1,6 @@
 {
     "name": "flowise",
-    "version": "1.4.11",
+    "version": "1.6.0",
     "private": true,
     "homepage": "https://langflux.space",
     "workspaces": [
@@ -56,5 +56,8 @@
     },
     "dependencies": {
         "firebase": "10.1.0"
+    },
+    "resolutions": {
+        "@qdrant/openapi-typescript-fetch": "1.2.1"
     }
 }
