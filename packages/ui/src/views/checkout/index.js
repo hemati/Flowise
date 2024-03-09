@@ -114,7 +114,7 @@ const CheckoutModal = ({ open, onClose }) => {
                             </Box>
                         </Typography>
                         <Typography variant='h6' component='div' sx={{ textDecoration: 'line-through', mt: 2, mb: 1 }}>
-                            $9.99/month
+                            $59.99/month
                         </Typography>
                         <Typography variant='subtitle2' color='textSecondary' mb={3}>
                             First 7 days trial for FREE!
