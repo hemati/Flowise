@@ -14,7 +14,7 @@ import themes from '@/themes'
 import NavigationScroll from '@/layout/NavigationScroll'
 
 import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from 'firebaseSetup'
+import { auth } from '@/firebaseSetup'
 import { SET_MENU, setAuthenticated, toggleCheckoutModal } from './store/actions' // make sure path is correct
 
 import { useNavigate } from 'react-router-dom'
@@ -24,7 +24,7 @@ import useTour from './hooks/useTour'
 import CheckoutModal from './views/checkout'
 import LoginForm from './views/loginform'
 
-import { fetchPremiumStatus } from 'firebaseFunctions/functions'
+import { fetchPremiumStatus } from '@/firebaseFunctions/functions'
 
 function findClosestDivWithClassByText(text, className) {
     // return $(`p:contains("${text}")`).closest(`div.${className}`)[0]

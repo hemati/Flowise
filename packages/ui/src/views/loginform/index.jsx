@@ -20,7 +20,7 @@ import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 import { useTheme } from '@mui/material/styles'
-import { StyledButton } from 'ui-component/button/StyledButton'
+import { StyledButton } from '@/ui-component/button/StyledButton'
 import SimpleHub from '../simplehub'
 import logoPath from '../../assets/images/logo.png'
 

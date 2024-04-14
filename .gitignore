@@ -45,4 +45,4 @@
 ## compressed
 **/*.tgz
 /.flowise/
-/packages/ui/src/firebaseSetup.js
+/packages/ui/src/firebaseSetup.jsx
