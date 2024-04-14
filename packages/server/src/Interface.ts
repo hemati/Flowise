@@ -6,6 +6,11 @@ export enum chatType {
     INTERNAL = 'INTERNAL',
     EXTERNAL = 'EXTERNAL'
 }
+
+export enum ChatMessageRatingType {
+    THUMBS_UP = 'THUMBS_UP',
+    THUMBS_DOWN = 'THUMBS_DOWN'
+}
 /**
  * Databases
  */
@@ -37,6 +42,16 @@ export interface IChatMessage {
     chatId: string
     memoryType?: string
     sessionId?: string
+    createdDate: Date
+}
+
+export interface IChatMessageFeedback {
+    id: string
+    content?: string
+    chatflowid: string
+    chatId: string
+    messageId: string
+    rating: ChatMessageRatingType
     createdDate: Date
 }
 
@@ -79,6 +94,14 @@ export interface IVariable {
     type: string
     updatedDate: Date
     createdDate: Date
+}
+
+export interface IUpsertHistory {
+    id: string
+    chatflowid: string
+    result: string
+    flowData: string
+    date: Date
 }
 
 export interface IComponentNodes {
@@ -175,7 +198,6 @@ export interface IMessage {
 
 export interface IncomingInput {
     question: string
-    history: IMessage[]
     overrideConfig?: ICommonObject
     socketIOClientId?: string
     chatId?: string

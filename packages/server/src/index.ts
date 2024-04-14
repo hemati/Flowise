@@ -89,7 +89,7 @@ export class App {
     chatflowPool: ChatflowPool
     cachePool: CachePool
     telemetry: Telemetry
-    AppDataSource = getDataSource()
+    AppDataSource: DataSource = getDataSource()
 
     constructor() {
         this.app = express()
@@ -138,7 +138,6 @@ export class App {
         const flowise_file_size_limit = process.env.FLOWISE_FILE_SIZE_LIMIT ?? '50mb'
         this.app.use(express.json({ limit: flowise_file_size_limit }))
         this.app.use(express.urlencoded({ limit: flowise_file_size_limit, extended: true }))
-
         if (process.env.NUMBER_OF_PROXIES && parseInt(process.env.NUMBER_OF_PROXIES) > 0)
             this.app.set('trust proxy', parseInt(process.env.NUMBER_OF_PROXIES))
 
@@ -166,6 +165,12 @@ export class App {
         // Add the sanitizeMiddleware to guard against XSS
         this.app.use(sanitizeMiddleware)
 
+        // Make io accessible to our router on req.io
+        this.app.use((req, res, next) => {
+            req.io = socketIO
+            next()
+        })
+
         if (process.env.FLOWISE_USERNAME && process.env.FLOWISE_PASSWORD) {
             const username = process.env.FLOWISE_USERNAME
             const password = process.env.FLOWISE_PASSWORD
@@ -184,6 +189,7 @@ export class App {
                 '/api/v1/chatflows-streaming',
                 '/api/v1/chatflows-uploads',
                 '/api/v1/openai-assistants-file',
+                '/api/v1/feedback',
                 '/api/v1/get-upload-file',
                 '/api/v1/ip'
             ]
@@ -300,11 +306,6 @@ export class App {
 
         // load async options
         this.app.post('/api/v1/node-load-method/:name', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (req.params.name === 'openAIAssistant' && !userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
             const nodeData: INodeData = req.body
             if (Object.prototype.hasOwnProperty.call(this.nodesPool.componentNodes, req.params.name)) {
                 try {
@@ -313,8 +314,7 @@ export class App {
 
                     const returnOptions: INodeOptionsValue[] = await nodeInstance.loadMethods![methodName]!.call(nodeInstance, nodeData, {
                         appDataSource: this.AppDataSource,
-                        databaseEntities: databaseEntities,
-                        userid: userid
+                        databaseEntities: databaseEntities
                     })
 
                     return res.json(returnOptions)
@@ -365,20 +365,8 @@ export class App {
 
         // Get all chatflows
         this.app.get('/api/v1/chatflows', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
-            if (userid === 'd69qR2TZVWTYO8Eo9UiaFBgOCJz2') {
-                const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).find()
-                return res.json(chatflows)
-            } else {
-                const chatflows: IChatFlow[] = await this.AppDataSource.getRepository(ChatFlow).findBy({
-                    userid: userid
-                })
-                return res.json(chatflows)
-            }
+            const chatflows: IChatFlow[] = await getAllChatFlow()
+            return res.json(chatflows)
         })
 
         // Get specific chatflow via api key
@@ -443,7 +431,6 @@ export class App {
         // Save chatflow
         this.app.post('/api/v1/chatflows', async (req: Request, res: Response) => {
             const body = req.body
-            body['userid'] = req.headers.userid
             const newChatFlow = new ChatFlow()
             Object.assign(newChatFlow, body)
 
@@ -679,9 +666,7 @@ export class App {
 
         // Create new credential
         this.app.post('/api/v1/credentials', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
             const body = req.body
-            body['userid'] = userid
             const newCredential = await transformToCredentialEntity(body)
             const credential = this.AppDataSource.getRepository(Credential).create(newCredential)
             const results = await this.AppDataSource.getRepository(Credential).save(credential)
@@ -690,30 +675,25 @@ export class App {
 
         // Get all credentials
         this.app.get('/api/v1/credentials', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
             if (req.query.credentialName) {
                 let returnCredentials = []
                 if (Array.isArray(req.query.credentialName)) {
                     for (let i = 0; i < req.query.credentialName.length; i += 1) {
                         const name = req.query.credentialName[i] as string
                         const credentials = await this.AppDataSource.getRepository(Credential).findBy({
-                            credentialName: name,
-                            userid: userid
+                            credentialName: name
                         })
                         returnCredentials.push(...credentials)
                     }
                 } else {
                     const credentials = await this.AppDataSource.getRepository(Credential).findBy({
-                        credentialName: req.query.credentialName as string,
-                        userid: userid
+                        credentialName: req.query.credentialName as string
                     })
                     returnCredentials = [...credentials]
                 }
                 return res.json(returnCredentials)
             } else {
-                const credentials = await this.AppDataSource.getRepository(Credential).findBy({
-                    userid: userid
-                })
+                const credentials = await this.AppDataSource.getRepository(Credential).find()
                 const returnCredentials = []
                 for (const credential of credentials) {
                     returnCredentials.push(omit(credential, ['encryptedData']))
@@ -771,14 +751,7 @@ export class App {
 
         // Get all tools
         this.app.get('/api/v1/tools', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
-            const tools = await this.AppDataSource.getRepository(Tool).findBy({
-                userid: userid
-            })
+            const tools = await this.AppDataSource.getRepository(Tool).find()
             return res.json(tools)
         })
 
@@ -792,13 +765,7 @@ export class App {
 
         // Add tool
         this.app.post('/api/v1/tools', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
             const body = req.body
-            body.userid = userid
             const newTool = new Tool()
             Object.assign(newTool, body)
 
@@ -847,48 +814,23 @@ export class App {
 
         // Get all assistants
         this.app.get('/api/v1/assistants', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
-            if (userid === 'd69qR2TZVWTYO8Eo9UiaFBgOCJz2') {
-                const assistants = await this.AppDataSource.getRepository(Assistant).find()
-                return res.json(assistants)
-            } else {
-                const assistants = await this.AppDataSource.getRepository(Assistant).findBy({
-                    userid: userid
-                })
-                return res.json(assistants)
-            }
+            const assistants = await this.AppDataSource.getRepository(Assistant).find()
+            return res.json(assistants)
         })
 
         // Get specific assistant
         this.app.get('/api/v1/assistants/:id', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
-
             const assistant = await this.AppDataSource.getRepository(Assistant).findOneBy({
-                id: req.params.id,
-                userid: userid
+                id: req.params.id
             })
             return res.json(assistant)
         })
 
         // Get assistant object
         this.app.get('/api/v1/openai-assistants/:id', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
             const credentialId = req.query.credential as string
             const credential = await this.AppDataSource.getRepository(Credential).findOneBy({
-                id: credentialId,
-                userid: userid
+                id: credentialId
             })
 
             if (!credential) return res.status(404).send(`Credential ${credentialId} not found`)
@@ -912,15 +854,9 @@ export class App {
 
         // List available assistants
         this.app.get('/api/v1/openai-assistants', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
             const credentialId = req.query.credential as string
             const credential = await this.AppDataSource.getRepository(Credential).findOneBy({
-                id: credentialId,
-                userid: userid
+                id: credentialId
             })
 
             if (!credential) return res.status(404).send(`Credential ${credentialId} not found`)
@@ -938,13 +874,7 @@ export class App {
 
         // Add assistant
         this.app.post('/api/v1/assistants', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
             const body = req.body
-            body.userid = userid
 
             if (!body.details) return res.status(500).send(`Invalid request body`)
 
@@ -1064,15 +994,8 @@ export class App {
 
         // Update assistant
         this.app.put('/api/v1/assistants/:id', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
-
             const assistant = await this.AppDataSource.getRepository(Assistant).findOneBy({
-                id: req.params.id,
-                userid: userid
+                id: req.params.id
             })
 
             if (!assistant) {
@@ -1084,7 +1007,6 @@ export class App {
                 const openAIAssistantId = JSON.parse(assistant.details)?.id
 
                 const body = req.body
-                body.userid = userid
                 const assistantDetails = JSON.parse(body.details)
 
                 const credential = await this.AppDataSource.getRepository(Credential).findOneBy({
@@ -1180,15 +1102,8 @@ export class App {
 
         // Delete assistant
         this.app.delete('/api/v1/assistants/:id', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            if (!userid) {
-                res.status(400).send('userid header is missing') // Return an error if the userid is missing
-                return
-            }
-
             const assistant = await this.AppDataSource.getRepository(Assistant).findOneBy({
-                id: req.params.id,
-                userid: userid
+                id: req.params.id
             })
 
             if (!assistant) {
@@ -1474,18 +1389,13 @@ export class App {
         // Variables
         // ----------------------------------------
         this.app.get('/api/v1/variables', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            const variables = await getDataSource().getRepository(Variable).findBy({
-                userid: userid
-            })
+            const variables = await getDataSource().getRepository(Variable).find()
             return res.json(variables)
         })
 
         // Create new variable
         this.app.post('/api/v1/variables', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
             const body = req.body
-            body['userid'] = userid
             const newVariable = new Variable()
             Object.assign(newVariable, body)
             const variable = this.AppDataSource.getRepository(Variable).create(newVariable)
@@ -1546,15 +1456,13 @@ export class App {
         }
         // Get api keys
         this.app.get('/api/v1/apikey', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            const keys = await getAPIKeys(userid)
+            const keys = await getAPIKeys()
             return addChatflowsCount(keys, res)
         })
 
         // Add new api key
         this.app.post('/api/v1/apikey', async (req: Request, res: Response) => {
-            const userid = Array.isArray(req.headers.userid) ? req.headers.userid[0] : req.headers.userid
-            const keys = await addAPIKey(req.body.keyName, userid)
+            const keys = await addAPIKey(req.body.keyName)
             return addChatflowsCount(keys, res)
         })
 
@@ -1592,7 +1500,7 @@ export class App {
         this.app.use('/', express.static(uiBuildPath))
 
         // All other requests not handled will return React app
-        this.app.use((req, res) => {
+        this.app.use((req: Request, res: Response) => {
             res.sendFile(uiHtmlPath)
         })
     }
@@ -1612,7 +1520,7 @@ export class App {
 
         const suppliedKey = authorizationHeader.split(`Bearer `).pop()
         if (suppliedKey) {
-            const keys = await getAPIKeys(undefined)
+            const keys = await getAPIKeys()
             const apiSecret = keys.find((key) => key.id === chatFlowApiKeyId)?.apiSecret
             if (!compareKeys(apiSecret, suppliedKey)) return false
             return true

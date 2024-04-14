@@ -399,9 +399,7 @@ const Marketplace = () => {
                                                     }
                                                 }}
                                                 badgeContent={data.badge}
-                                                color={
-                                                    data.badge === 'POPULAR' ? 'primary' : data.badge === 'TUTORIAL' ? 'success' : 'error'
-                                                }
+                                                color={data.badge === 'POPULAR' ? 'primary' : 'error'}
                                             >
                                                 {data.type === 'Chatflow' && (
                                                     <ItemCard onClick={() => goToCanvas(data)} data={data} images={images[data.id]} />
